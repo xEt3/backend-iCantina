@@ -1,0 +1,32 @@
+{
+  "name": "backend-icantina",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/xEt3/backend-iCantina.git"
+  },
+  "author": "Ignacio Belmonte",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xEt3/backend-iCantina/issues"
+  },
+  "homepage": "https://github.com/xEt3/backend-iCantina#readme",
+  "dependencies": {
+    "@types/bcrypt": "^3.0.0",
+    "@types/express": "^4.17.6",
+    "@types/jsonwebtoken": "^8.3.9",
+    "@types/mongoose": "^5.7.12",
+    "bcrypt": "^4.0.1",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.1.7-alpha.3",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.10"
+  }
+}
