@@ -17,14 +17,10 @@ const orderSchema = new Schema({
             type: Number,
             required: [true, 'amount of products is requiered']
         },
-        required: [true, 'products is requiered']
     }],
     price: {
         type: Number,
         required: [true, 'price is required']
-    },
-    img: {
-        type: String
     },
     desc: {
         type: String
@@ -54,7 +50,6 @@ export interface IOrder extends Document {
     client: string,
     products: { product: string, amount: number }[],
     price: number,
-    img: string,
     desc: string,
     done: boolean,
     created: Date,
