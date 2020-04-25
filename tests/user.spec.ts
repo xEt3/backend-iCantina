@@ -22,6 +22,14 @@ describe('UserTest: ', () => {
                     }
                     users.push(user);
                 }
+                const user = {
+                    name: 'admin',
+                    mail: 'admin',
+                    admin: true,
+                    employee: true,
+                    password: bcrypt.hashSync('123456', 10)
+                }
+                users.push(user);
                 User.create(users).then((usersDB) => {
                     users = usersDB;
                     done()
@@ -58,7 +66,7 @@ describe('UserTest: ', () => {
             it('should receive  error 400 empty field', (done) => {
                 chai.request(url)
                     .post('/user/create')
-                    .send({  mail: "user2@mail", password: '123456' })
+                    .send({ mail: "user2@mail", password: '123456' })
                     .end(function (err: any, res: any) {
                         expect(res).to.have.status(400);
                         expect(res.ok).to.equals(false)
@@ -194,82 +202,98 @@ describe('UserTest: ', () => {
             })
         });
 
-        describe('Update User', () => {
-
-            before('Login user to do the operations', (done) => {
+        describe('Change range User', () => {
+            before('Login like admin user to do the operations', (done) => {
                 chai.request(url)
                     .post(`/user/login`)
-                    .send({ mail: users[0].mail, password: '123456' })
+                    .send({ mail: users[5].mail, password: '123456' })
                     .end(function (err: any, res: any) {
                         token = res.body.token;
                         done();
                     });
             })
 
-            it('Should change the name and return new token', (done) => {
+            it('Should change the user0 to employee', (done) => {
                 chai.request(url)
-                    .post(`/user/update`)
-                    .send({ name: 'new name' })
+                    .post(`/user/changeRange/${users[0]._id}`)
+                    .send({ employee: true })
                     .set({ 'x-token': token })
                     .end(function (err: any, res: any) {
                         expect(res).to.have.status(200);
-                        expect(res.body.token).to.not.equals('');
-                        token = res.body.token;
+                        expect(res.body.ok).to.equals(true);
+                        expect(res.body.user.employee).to.equals(true);
                         done()
                     });
             })
 
-            it('Should change the mail and return new token', (done) => {
+
+            it('Should change the user0 to admin', (done) => {
                 chai.request(url)
-                    .post(`/user/update`)
-                    .send({ mail: 'new mail' })
+                    .post(`/user/changeRange/${users[0]._id}`)
+                    .send({ admin: true })
                     .set({ 'x-token': token })
                     .end(function (err: any, res: any) {
                         expect(res).to.have.status(200);
-                        expect(res.body.token).to.not.equals('');
-                        token = res.body.token;
+                        expect(res.body.ok).to.equals(true);
+                        expect(res.body.user.admin).to.equals(true);
                         done()
                     });
-            });
+            })
 
-            it('Should return error the mail already exist', (done) => {
+            it('Should return error invalid parameter', (done) => {
                 chai.request(url)
-                    .post(`/user/update`)
-                    .send({ mail: users[1].mail })
+                    .post(`/user/changeRange/${users[1]._id}`)
+                    .send({ admin: 'nose' })
                     .set({ 'x-token': token })
                     .end(function (err: any, res: any) {
                         expect(res).to.have.status(400);
+                        expect(res.body.ok).to.equals(false);
                         done()
                     });
             })
 
-
-            it('Should return the same token', (done) => {
+            it('Should return error empty parameter', (done) => {
                 chai.request(url)
-                    .post(`/user/update`)
+                    .post(`/user/changeRange/${users[1]._id}`)
                     .set({ 'x-token': token })
                     .end(function (err: any, res: any) {
-                        const newToken = res.body.token;
+                        expect(res).to.have.status(400);
+                        expect(res.body.ok).to.equals(false);
+                        done()
+                    });
+            })
+
+            it('Should change the user1 to employee', (done) => {
+                chai.request(url)
+                    .post(`/user/changeRange/${users[1]._id}`)
+                    .send({ employee: true })
+                    .set({ 'x-token': token })
+                    .end(function (err: any, res: any) {
                         expect(res).to.have.status(200);
-                        expect(newToken).to.equals(token);
+                        expect(res.body.ok).to.equals(true);
+                        expect(res.body.user.employee).to.equals(true);
                         done()
                     });
             })
 
-            it('Should the user update', (done) => {
+            it('Should return error user 1 is not admin', (done) => {
                 chai.request(url)
-                    .get(`/user/me`)
-                    .set({ 'x-token': token })
+                    .post(`/user/login`)
+                    .send({ mail: users[1].mail, password: '123456' })
                     .end(function (err: any, res: any) {
-                        expect(res.body.user.mail).to.equals('new mail');
-                        expect(res.body.user.name).to.equals('new name');
-                        done()
+                        let tokenUser1 = res.body.token;
+                        chai.request(url)
+                            .post(`/user/changeRange/${users[1]._id}`)
+                            .send({ employee: true })
+                            .set({ 'x-token': tokenUser1 })
+                            .end(function (err: any, res: any) {
+                                expect(res).to.have.status(401);
+                                done();
+                            });
                     });
-            })
-
-
-        })
-    })
+            });
+        });
+    });
 
     after((done) => {
         mongoose.connect('mongodb://localhost:27017/testiCantina', { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {

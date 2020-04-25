@@ -2,24 +2,23 @@ import { FileUpload } from '../interfaces/file-upload';
 import path from 'path';
 import fs from 'fs';
 import uniqid from 'uniqid';
-import { Usuario } from '../models/user.model';
 
 export default class FileSystem {
 
     constructor() { }
 
-    moverImgsEnTempToPost(userID: string) {
+    moverImgsFormTempToProduct(userID: string) {
         const pathTmp = path.resolve(__dirname, '../uploads', userID, 'temp');
-        const pathPost = path.resolve(__dirname, '../uploads', userID, 'post');
+        const pathProduct = path.resolve(__dirname, '../uploads', userID, 'product');
         if (!fs.existsSync(pathTmp)) {
             return [];
         }
-        if (!fs.existsSync(pathPost)) {
-            fs.mkdirSync(pathPost);
+        if (!fs.existsSync(pathProduct)) {
+            fs.mkdirSync(pathProduct);
         }
         const imagenesTemp = this.obtenerImagenesEnTemp(userID);
         imagenesTemp.forEach(imagen => {
-            fs.renameSync(`${pathTmp}/${imagen}`, `${pathPost}/${imagen}`);
+            fs.renameSync(`${pathTmp}/${imagen}`, `${pathProduct}/${imagen}`);
         })
         return imagenesTemp;
     }
@@ -30,24 +29,29 @@ export default class FileSystem {
 
     }
 
-    eliminarImagenesPost(idUsuario:string,imgs:string[]){
-        imgs.forEach(img=>{
-            const pathFile = path.resolve(__dirname, `../uploads/${idUsuario}/post`, img);
-            this.eliminarFichero(pathFile);
+    deleteImagesProduct(idUsuario: string, imgs: string[]) {
+        imgs.forEach(img => {
+            const pathFile = path.resolve(__dirname, `../uploads/${idUsuario}/product`, img);
+            this.deleteFile(pathFile);
         })
     }
 
-    eliminarFicheroTemp(idUsuario: string, nombreFichero: string) {
-        const pathFile = path.resolve(__dirname, `../uploads/${idUsuario}/temp`, nombreFichero);
-        return this.eliminarCarpeta(pathFile);
+    deleteImageProduct(idUser: string, img: string) {
+        const pathFile = path.resolve(__dirname, `../uploads/${idUser}/product`, img);
+        return this.deleteFile(pathFile);
     }
 
-    eliminarCarpetaTemp(idUsuario: string) {
+    deleteTempFile(idUser: string, fileName: string) {
+        const pathFile = path.resolve(__dirname, `../uploads/${idUser}/temp`, fileName);
+        return this.deleteFolder(pathFile);
+    }
+
+    deleteTempFolder(idUsuario: string) {
         const pathFile = path.resolve(__dirname, `../uploads/${idUsuario}/temp`);
-        return this.eliminarFichero(pathFile);
+        return this.deleteFile(pathFile);
     }
 
-    private eliminarFichero(path: string): boolean {
+    private deleteFile(path: string): boolean {
         if (fs.existsSync(path)) {
             fs.rmdirSync(path, { recursive: true });
             return true;
@@ -56,7 +60,7 @@ export default class FileSystem {
         }
     }
 
-    private eliminarCarpeta(path:string):boolean{
+    private deleteFolder(path: string): boolean {
         if (fs.existsSync(path)) {
             fs.unlinkSync(path);
             return true;
@@ -65,45 +69,45 @@ export default class FileSystem {
         }
     }
 
-    guardarImagenTemporal(file: FileUpload, userID: string) {
+    saveTempImage(file: FileUpload, userID: string) {
         return new Promise<string>((resolve, reject) => {
-            const pathTmp = this.crearCarpetaUsuario(userID);
-            const nombreArchivo = this.generarNombreArchivo(file.name);
-            file.mv(`${pathTmp}/${nombreArchivo}`, (err: any) => {
+            const pathTmp = this.createUserFolder(userID);
+            const fileName = this.createFileName(file.name);
+            file.mv(`${pathTmp}/${fileName}`, (err: any) => {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(nombreArchivo);
+                    resolve(fileName);
                 }
             })
         })
     }
 
-    private crearCarpetaUsuario(userID: string) {
+    private createUserFolder(userID: string) {
         const pathUser = path.resolve(__dirname, '../uploads', userID);
-        const pathUserTemporal = pathUser + '/temp';
-        const existeCarpetaUser = fs.existsSync(pathUser);
-        const existeCarpetaTemporal = fs.existsSync(pathUserTemporal);
-        if (!existeCarpetaUser) {
+        const pathUserTemp = pathUser + '/temp';
+        const existUserFolder = fs.existsSync(pathUser);
+        const existTempFolder = fs.existsSync(pathUserTemp);
+        if (!existUserFolder) {
             fs.mkdirSync(pathUser);
         }
-        if (!existeCarpetaTemporal) {
-            fs.mkdirSync(pathUserTemporal);
+        if (!existTempFolder) {
+            fs.mkdirSync(pathUserTemp);
         }
-        return pathUserTemporal;
+        return pathUserTemp;
     }
 
-    private generarNombreArchivo(nombreFichero: string) {
-        const nombreArr = nombreFichero.split('.');
-        const extension = nombreArr[nombreArr.length - 1];
-        const idUnico = uniqid();
-        return `${idUnico}.${extension}`
+    private createFileName(fileName: string) {
+        const nameArr = fileName.split('.');
+        const extension = nameArr[nameArr.length - 1];
+        const idUniq = uniqid();
+        return `${idUniq}.${extension}`
     }
 
     getImgUrl(userId: string, img: string) {
-        const pathFoto = path.resolve(__dirname, '../uploads', userId, 'post', img);
-        if (fs.existsSync(pathFoto)) {
-            return pathFoto;
+        const pathPhoto = path.resolve(__dirname, '../uploads', userId, 'product', img);
+        if (fs.existsSync(pathPhoto)) {
+            return pathPhoto;
         } else {
             return path.resolve(__dirname, '../assets/defaultImagen.jpg');
         }

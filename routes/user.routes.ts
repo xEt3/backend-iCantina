@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 import bcrypt from 'bcrypt'
 import { Token } from '../classes/token';
-import { verificaToken } from '../middlewares/autenticacion';
+import { verificaToken, verificacionTokenAdmin } from '../middlewares/autenticacion';
 import { User, Iuser } from "../models/user.model";
 
 
@@ -117,6 +117,8 @@ userRoutes.post('/login', (req: Request, res: Response) => {
                     _id: userDB.id,
                     name: userDB.name,
                     mail: userDB.mail,
+                    admin: userDB.admin,
+                    employee: userDB.employee
                 });
                 res.json({
                     ok: true,
@@ -144,16 +146,14 @@ userRoutes.post('/update', verificaToken, async (req: any, res: Response) => {
         mail: req.body.mail || req.user.mail,
     }
     try {
-        let usr:any = await User.findOne({ mail: user.mail }).exec();
-        if(usr && user.mail !== req.user.mail){
-            console.log('usr',usr)
-            console.log('mail',user.mail);
+        let usr: any = await User.findOne({ mail: user.mail }).exec();
+        if (usr && user.mail !== req.user.mail) {
             return res.status(400).json({
                 ok: false,
                 message: 'This mail is alrady in use'
             });
         }
-    } catch (error) {}
+    } catch (error) { }
 
     try {
         User.findByIdAndUpdate(req.user._id, user, { new: true }, (err, userDB) => {
@@ -203,6 +203,62 @@ userRoutes.get('/me', [verificaToken], async (req: any, res: Response) => {
             message: 'User not found'
         });
     }
+});
+
+userRoutes.post('/changeRange/:idUser', [verificacionTokenAdmin], async (req: any, res: Response) => {
+    const idUser = req.params.idUser;
+    let userDB;
+    try {
+        userDB = await User.findById(idUser).exec();
+    } catch (error) {
+        return res.status(404).json({
+            ok: false,
+            error
+        });
+    }
+    if(!userDB){
+        return res.status(404).json({
+            ok: false,
+            message: 'User not found'
+        });
+    }
+
+    if(!req.body.admin && !req.body.employee){
+        return res.status(400).json({
+            ok: false,
+            message: 'Empty parameters'
+        });
+    }
+    const user = {
+        admin: req.body.admin || userDB.admin,
+        employee: req.body.employee || userDB.employee,
+    }
+    try {
+        User.findByIdAndUpdate(idUser, user, { new: true },async (err, userDB) => {
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    err
+                })
+            };
+            if (!userDB) {
+                return res.status(404).json({
+                    ok: false,
+                    message: 'Invalid ID'
+                });
+            }
+            res.json({
+                ok: true,
+                user: await User.findById(idUser).exec();
+            });
+        });
+    } catch (error) {
+        return res.status(404).json({
+            ok: false,
+            message: 'Invalid type id'
+        });
+    }
+
 });
 
 export default userRoutes;

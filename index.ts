@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import fileUpload from 'express-fileupload';
 import cors from 'cors';
+import productRoutes from './routes/product.routes';
 
 const server = new Server();
 
@@ -20,6 +21,7 @@ server.app.use(cors({ origin: true, credentials: true }))
 
 //Routas de mi app 
 server.app.use('/user', userRoutes);
+server.app.use('/product', productRoutes);
 
 //Conectar db
 mongoose.connect('mongodb://localhost:27017/testiCantina',

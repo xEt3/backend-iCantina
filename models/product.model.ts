@@ -10,24 +10,30 @@ const productSchema = new Schema({
         type: Number,
         required: [true, 'price is required']
     },
-    img: {
+    imgs: [{
         type: String
-    },
+    }],
     desc: {
         type: String
     },
     available: {
         type: Boolean,
         default: false
+    },
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: [true, 'User is requiered']
     }
 });
 
 export interface IProduct extends Document {
     name: string,
     price: number,
-    img: string,
+    imgs: string[],
     desc: string,
     available: boolean,
+    user:string
 }
 
 export const Product = model<IProduct>('Product', productSchema)

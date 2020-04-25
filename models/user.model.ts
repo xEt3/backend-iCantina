@@ -23,7 +23,9 @@ const userSchema = new Schema({
     employee: {
         type: Boolean,
         default: false
-    }
+    },imgsTemp: [{
+        type: String
+    }]
 });
 
 userSchema.method('comparePassword', function (password: string = ''): boolean {
@@ -36,6 +38,7 @@ export interface Iuser extends Document {
     password: string,
     admin: boolean,
     employee: boolean,
+    imgsTemp:string[]
     comparePassword(password: string): boolean
 }
 
