@@ -1,8 +1,8 @@
 # Backend iCantina
 
 * Server Port : `3000` tcp
-* Base de datos oficial: `mongodb://localhost:27017/iPost`
-* Base de datos testing: `mongodb://localhost:27017/testiPost`
+* Oficial Data Base: `mongodb://localhost:27017/iCantina`
+* Testing Data Base: `mongodb://localhost:27017/testiCantina`
 
 ## Dependencies
   * [NodeJs 12](https://nodejs.org/es/)
@@ -32,6 +32,15 @@
   
   Install all dependencies: <code>npm install express body-parser cors mongoose express-fileupload jsonwebtoken bcrypt</code>
 
+## Install Test dependencies
+
+ Mocha: <code>npm install -g mocha</code>
+ 
+ Chai <code>npm install chai-http</code>
+ 
+ ***Run test:***
+ <code>mocha dist/tests</code>
+ 
 
 ## Init server
 
