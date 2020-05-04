@@ -232,8 +232,12 @@ productRoutes.post('/update/:idProduct', [verificacionTokenEmployee], async (req
         product = {
             name: req.body.name || productdb.name,
             price: req.body.price || productdb.price,
-            available: req.body.available || productdb.available
+            available: req.body.available 
         }
+        if(product.available === null){
+            product.available=productdb.available
+        }
+        
     } catch (error) {
         return res.status(404).json({
             ok: false,

@@ -63,7 +63,7 @@ describe('ProductTest: ', () => {
                 await Product.create(products).then(productDB => {
                     products = productDB;
                 })
-                productOrder.push({product:products[0]._id,amount:1},{product:products[0]._id,amount:1});
+                productOrder.push({product:products[0]._id,amount:1,price:2},{product:products[0]._id,amount:1});
                 for (let i = 0; i < 5; i++) {
                     const order = {
                         client:users[0]._id,

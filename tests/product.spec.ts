@@ -16,7 +16,7 @@ let token = '';
 let productAux: any;
 
 
-describe('UserTest: ', () => {
+describe('ProductTest: ', () => {
     before((done) => {
         mongoose.connect('mongodb://localhost:27017/testiCantina', { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
             mongoose.connection.db.dropDatabase(async function () {
@@ -376,7 +376,7 @@ describe('UserTest: ', () => {
     });
 
 
-    describe('Update User', () => {
+    describe('Update product', () => {
         it('Should change the name product', (done) => {
             chai.request(url)
                 .post(`/product/update/${products[1]._id}`)
@@ -392,7 +392,7 @@ describe('UserTest: ', () => {
 
         it('Should change the available satatus', (done) => {
             chai.request(url)
-                .post(`/product/update/${products[1]._id}`)
+                .post(`/product/update/${products[2]._id}`)
                 .send({ available: true})
                 .set({ 'x-token': token })
                 .end(function (err: any, res: any) {

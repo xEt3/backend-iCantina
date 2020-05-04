@@ -23,10 +23,15 @@ const userSchema = new Schema({
     employee: {
         type: Boolean,
         default: false
-    },imgsTemp: [{
+    }, imgsTemp: [{
         type: String
     }]
 });
+userSchema.methods.toJSON = function () {
+    var obj = this.toObject();
+    delete obj.password;
+    return obj;
+}
 
 userSchema.method('comparePassword', function (password: string = ''): boolean {
     return bcrypt.compareSync(password, this.password);
@@ -38,7 +43,7 @@ export interface Iuser extends Document {
     password: string,
     admin: boolean,
     employee: boolean,
-    imgsTemp:string[]
+    imgsTemp: string[]
     comparePassword(password: string): boolean
 }
 

@@ -249,7 +249,7 @@ userRoutes.post('/changeRange/:idUser', [verificacionTokenAdmin], async (req: an
             }
             res.json({
                 ok: true,
-                user: await User.findById(idUser).exec();
+                user: await User.findById(idUser).exec()
             });
         });
     } catch (error) {
