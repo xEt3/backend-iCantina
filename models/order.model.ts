@@ -23,7 +23,8 @@ const orderSchema = new Schema({
         required: [true, 'price is required']
     },
     desc: {
-        type: String
+        type: String,
+        default:""
     },
     done: {
         type: Boolean,
