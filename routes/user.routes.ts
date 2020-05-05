@@ -198,7 +198,7 @@ userRoutes.get('/me', [verificaToken], async (req: any, res: Response) => {
             user: user
         });
     } else {
-        res.status(404).json({
+        res.json({
             ok: false,
             message: 'User not found'
         });
