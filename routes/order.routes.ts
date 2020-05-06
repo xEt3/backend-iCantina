@@ -11,7 +11,7 @@ orderRoutes.get('/myOrders', [verificaToken], async (req: any, res: Response, ne
     try {
         let page = Number(req.query.page - 1) || 0;
         let skip = page * 10;
-        const orders = await Order.find({ client: req.user._id }).limit(10).skip(skip).sort({ _id: -1 }).exec();
+        const orders = await Order.find({ client: req.user._id }).limit(10).skip(skip).sort({ _id: -1 }).populate('products.product').exec();
         return res.json({
             ok: true,
             orders
