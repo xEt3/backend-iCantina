@@ -25,7 +25,7 @@ orderRoutes.get('/history', [verificacionTokenEmployee], async (req: any, res: R
     try {
         let page = Number(req.query.page - 1) || 0;
         let skip = page * 10;
-        const orders = await Order.find().sort({ _id: -1 }).limit(10).skip(skip).populate('products.product').populate('employee', '-password').exec();
+        const orders = await Order.find().sort({ _id: -1 }).limit(10).skip(skip).populate('products.product').populate('employee', '-password').populate('client','-password').exec();
         return res.json({
             ok: true,
             orders
