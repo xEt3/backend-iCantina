@@ -132,7 +132,7 @@ describe('ProductTest: ', () => {
 
     describe('get my orders', () => {
 
-        it('should get a product ', (done) => {
+        it('should get my orders ', (done) => {
             chai.request(url)
                 .get(`/order/myOrders`)
                 .set({ 'x-token': token })
@@ -144,28 +144,6 @@ describe('ProductTest: ', () => {
                 });
         });
 
-        it('should return an empty array', (done) => {
-            chai.request(url)
-                .get('/order/myOrders?page=2')
-                .set({ 'x-token': token })
-                .end(function (err: any, res: any) {
-                    expect(res).to.have.status(200);
-                    expect(res.body.ok).to.equals(true)
-                    expect(res.body.orders.length).to.equals(0);
-                    done();
-                });
-        });
-
-        it('should return an error invalid page', (done) => {
-            chai.request(url)
-                .get('/order/myOrders?page=-1')
-                .set({ 'x-token': token })
-                .end(function (err: any, res: any) {
-                    expect(res).to.have.status(400);
-                    expect(res.body.ok).to.equals(false)
-                    done();
-                });
-        });
 
     });
 
