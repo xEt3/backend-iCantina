@@ -87,7 +87,6 @@ describe('ProductTest: ', () => {
             });
         });
     });
-
     it('should generate token', (done) => {
         chai.request(url)
             .post(`/user/login`)
@@ -131,7 +130,6 @@ describe('ProductTest: ', () => {
 
 
     describe('get my orders', () => {
-
         it('should get my orders ', (done) => {
             chai.request(url)
                 .get(`/order/myOrders`)
@@ -143,12 +141,9 @@ describe('ProductTest: ', () => {
                     done();
                 });
         });
-
-
     });
 
     describe('get orders unfinish', () => {
-
         it('should get a orders unfinished ', (done) => {
             chai.request(url)
                 .get(`/order/unfinished`)
@@ -160,7 +155,6 @@ describe('ProductTest: ', () => {
                     done();
                 });
         });
-
         it('should return array with 1 order cause there are 11 order and each page has 10 orders', (done) => {
             chai.request(url)
                 .get('/order/unfinished?page=2')
@@ -172,7 +166,6 @@ describe('ProductTest: ', () => {
                     done();
                 });
         });
-
         it('should return an error invalid page', (done) => {
             chai.request(url)
                 .get('/order/unfinished?page=-1')
@@ -183,11 +176,9 @@ describe('ProductTest: ', () => {
                     done();
                 });
         });
-
     });
 
     describe('delete order', () => {
-
         it('should return ok and delete order', (done) => {
             chai.request(url)
                 .delete(`/order/remove/${orderAux._id}`)
@@ -199,7 +190,6 @@ describe('ProductTest: ', () => {
                     done();
                 });
         });
-
         it('should return error post was deleted', (done) => {
             chai.request(url)
                 .delete(`/order/remove/${orderAux._id}`)
@@ -210,11 +200,9 @@ describe('ProductTest: ', () => {
                     done();
                 });
         });
-
     });
 
     describe('mark as done order', () => {
-
         it('should marks as done by user0', (done) => {
             chai.request(url)
                 .post(`/order/markAsDone/${orders[0]._id}`)
@@ -228,7 +216,6 @@ describe('ProductTest: ', () => {
                 });
         });
 
-
         it('should return error order not found', (done) => {
             chai.request(url)
                 .post(`/order/markAsDone/232`)
@@ -239,7 +226,31 @@ describe('ProductTest: ', () => {
                     done();
                 });
         });
+    });
 
+    describe('mark as ready order', () => {
+        it('should marks as done by user0', (done) => {
+            chai.request(url)
+                .post(`/order/markAsReady/${orders[2]._id}`)
+                .set({ 'x-token': token })
+                .end(function (err: any, res: any) {
+                    expect(res).to.have.status(200);
+                    expect(res.body.ok).to.equals(true);
+                    expect(res.body.order.ready).to.equals(true);
+                    expect(res.body.order.employeeMarkReady).to.equals(String(users[0]._id));
+                    done();
+                });
+        });
+        it('should return error order not found', (done) => {
+            chai.request(url)
+                .post(`/order/markAsReady/232`)
+                .set({ 'x-token': token })
+                .end(function (err: any, res: any) {
+                    expect(res).to.have.status(404);
+                    expect(res.body.ok).to.equals(false);
+                    done();
+                });
+        });
     });
 
     describe('get orders client', () => {
@@ -321,8 +332,6 @@ describe('ProductTest: ', () => {
                 });
         });
     });
-
-
 
     // after((done) => {
     //     mongoose.connect('mongodb://localhost:27017/testiPost', { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {

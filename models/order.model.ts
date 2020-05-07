@@ -30,7 +30,15 @@ const orderSchema = new Schema({
         type: Boolean,
         default: false
     },
+    ready: {
+        type: Boolean,
+        default: false
+    },
     employee: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    },
+    employeeMarkReady: {
         type: Schema.Types.ObjectId,
         ref: 'User',
     },
@@ -38,6 +46,9 @@ const orderSchema = new Schema({
         type: Date
     },
     deliverDate: {
+        type: Date
+    },
+    readyDate: {
         type: Date
     }
 });
@@ -54,7 +65,10 @@ export interface IOrder extends Document {
     desc: string,
     done: boolean,
     created: Date,
-    deliverDate: Date
+    deliverDate: Date,
+    ready:boolean,
+    employeeMarkReady:string,
+    readyDate:Date
 }
 
 export const Order = model<IOrder>('Order', orderSchema)

@@ -9,7 +9,7 @@ const orderRoutes = Router();
 
 orderRoutes.get('/myOrders', [verificaToken], async (req: any, res: Response, next: NextFunction) => {
     try {
-        const orders = await Order.find({ client: req.user._id }).sort({ _id: -1 }).populate('products.product').populate('employee','-password').exec();
+        const orders = await Order.find({ client: req.user._id }).sort({ _id: -1 }).populate('products.product').populate('employee', '-password').exec();
         return res.json({
             ok: true,
             orders
@@ -126,8 +126,38 @@ orderRoutes.post('/markAsDone/:idOrder', [verificacionTokenEmployee], async (req
             throw 'error'
         }
         order.done = true;
+        if (!order.ready) {
+            order.ready = true;
+            order.employeeMarkReady = req.user._id;
+            order.readyDate = new Date();
+        }
         order.deliverDate = new Date();
         order.employee = req.user._id;
+        Order.findByIdAndUpdate(idOrder, order).exec(async orderDB => {
+            return res.json({
+                ok: true,
+                order: await Order.findById(idOrder).exec()
+            })
+        })
+    } catch (error) {
+        return res.status(404).json({
+            ok: false,
+            message: 'order not found'
+        })
+    }
+});
+
+orderRoutes.post('/markAsReady/:idOrder', [verificacionTokenEmployee], async (req: any, res: Response, next: NextFunction) => {
+    const idOrder = req.params.idOrder;
+    let order: any;
+    try {
+        order = await Order.findById(idOrder).exec();
+        if (!order) {
+            throw 'error'
+        }
+        order.ready = true;
+        order.employeeMarkReady = req.user._id;
+        order.readyDate = new Date();
         Order.findByIdAndUpdate(idOrder, order).exec(async orderDB => {
             return res.json({
                 ok: true,
