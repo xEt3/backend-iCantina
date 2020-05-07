@@ -313,6 +313,42 @@ describe('ProductTest: ', () => {
                 });
         });
     });
+    describe('get orders history', () => {
+        it('should return 10 orders', (done) => {
+            chai.request(url)
+                .get(`/order/history?page=1`)
+                .set({ 'x-token': token })
+                .end(function (err: any, res: any) {
+                    expect(res).to.have.status(200);
+                    expect(res.body.ok).to.equals(true);
+                    expect(res.body.orders.length).to.equals(10);
+                    done();
+                });
+        });
+
+        it('should get an empty array', (done) => {
+            chai.request(url)
+                .get(`/order/history?page=10`)
+                .set({ 'x-token': token })
+                .end(function (err: any, res: any) {
+                    expect(res).to.have.status(200);
+                    expect(res.body.ok).to.equals(true);
+                    expect(res.body.orders.length).to.equals(0);
+                    done();
+                });
+        });
+
+        it('should return error invalid employee ', (done) => {
+            chai.request(url)
+                .get(`/order/history?page=-1`)
+                .set({ 'x-token': token })
+                .end(function (err: any, res: any) {
+                    expect(res).to.have.status(400);
+                    expect(res.body.ok).to.equals(false);
+                    done();
+                });
+        });
+    });
 
     // after((done) => {
     //     mongoose.connect('mongodb://localhost:27017/testiPost', { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {

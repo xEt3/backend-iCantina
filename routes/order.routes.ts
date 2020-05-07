@@ -21,6 +21,22 @@ orderRoutes.get('/myOrders', [verificaToken], async (req: any, res: Response, ne
         })
     }
 })
+orderRoutes.get('/history', [verificacionTokenEmployee], async (req: any, res: Response, next: NextFunction) => {
+    try {
+        let page = Number(req.query.page - 1) || 0;
+        let skip = page * 10;
+        const orders = await Order.find().sort({ _id: -1 }).limit(10).skip(skip).populate('products.product').populate('employee', '-password').exec();
+        return res.json({
+            ok: true,
+            orders
+        })
+    } catch (error) {
+        return res.status(400).json({
+            ok: false,
+            error: 'invalid page'
+        })
+    }
+})
 
 orderRoutes.get('/unfinished', [verificacionTokenEmployee], async (req: any, res: Response, next: NextFunction) => {
     try {
