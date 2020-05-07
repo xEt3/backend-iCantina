@@ -207,6 +207,8 @@ userRoutes.get('/me', [verificaToken], async (req: any, res: Response) => {
 
 userRoutes.post('/changeRange/:idUser', [verificacionTokenAdmin], async (req: any, res: Response) => {
     const idUser = req.params.idUser;
+    console.log(req.body);
+    
     let userDB;
     try {
         userDB = await User.findById(idUser).exec();
@@ -223,16 +225,24 @@ userRoutes.post('/changeRange/:idUser', [verificacionTokenAdmin], async (req: an
         });
     }
 
-    if(!req.body.admin && !req.body.employee){
+    if(req.body.admin===null && req.body.employee===null){
         return res.status(400).json({
             ok: false,
             message: 'Empty parameters'
         });
     }
-    const user = {
-        admin: req.body.admin || userDB.admin,
-        employee: req.body.employee || userDB.employee,
+    if(req.body.admin===null){
+        req.body.admin=userDB.admin;
     }
+    if(req.body.employee===null){
+        req.body.employee=userDB.employee;
+    }
+    const user = {
+        admin: req.body.admin, 
+        employee: req.body.employee
+    }
+    console.log(user);
+    
     try {
         User.findByIdAndUpdate(idUser, user, { new: true },async (err, userDB) => {
             if (err) {
