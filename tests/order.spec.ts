@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import fs from 'fs';
 import { User } from '../models/user.model';
 import { Product } from '../models/product.model';
-import { Order } from '../models/order.model';
+import { Order, IOrder } from '../models/order.model';
 
 let chai = require('chai');
 let chaiHttp = require('chai-http');
@@ -13,11 +13,11 @@ chai.use(chaiHttp);
 const url = 'http://localhost:3000';
 let users: any[] = []
 let products: any[] = [];
-let orders:any[]=[];
-let orderAux:any;
+let orders: any[] = [];
+let orderAux: any;
 let token = '';
 let productAux: any;
-let productOrder:any[]=[];
+let productOrder: any[] = [];
 
 describe('ProductTest: ', () => {
     before((done) => {
@@ -63,25 +63,25 @@ describe('ProductTest: ', () => {
                 await Product.create(products).then(productDB => {
                     products = productDB;
                 })
-                productOrder.push({product:products[0]._id,amount:1,price:2},{product:products[0]._id,amount:1});
+                productOrder.push({ product: products[0]._id, amount: 1, price: 2 }, { product: products[0]._id, amount: 1 });
                 for (let i = 0; i < 5; i++) {
                     const order = {
-                        client:users[0]._id,
-                        products:productOrder,
+                        client: users[0]._id,
+                        products: productOrder,
                         price: 24,
                     }
                     orders.push(order);
                 }
                 for (let i = 0; i < 5; i++) {
                     const order = {
-                        client:users[1]._id,
-                        products:productOrder,
+                        client: users[1]._id,
+                        products: productOrder,
                         price: 24,
                     }
                     orders.push(order);
                 }
                 await Order.create(orders).then(orderDB => {
-                    orders= orderDB;
+                    orders = orderDB;
                 })
                 done()
             });
@@ -102,7 +102,7 @@ describe('ProductTest: ', () => {
         it('should insert order with 2 product and cost 24', (done) => {
             chai.request(url)
                 .post('/order')
-                .send({products:productOrder,desc:'descripcion',imgs:['img']})
+                .send({ products: productOrder, desc: 'descripcion', imgs: ['img'] })
                 .set({ 'x-token': token })
                 .end(function (err: any, res: any) {
                     expect(res).to.have.status(200);
@@ -111,14 +111,14 @@ describe('ProductTest: ', () => {
                     expect(res.body.order.price).to.equals(24);
                     expect(res.body.order.client).to.equals(String(users[0]._id));
                     expect(res.body.order.desc).to.equals('descripcion');
-                    orderAux=res.body.order
+                    orderAux = res.body.order
                     done();
                 });
         });
         it('should return error no products', (done) => {
             chai.request(url)
                 .post('/order')
-                .send({products:[{nada:'nada'}]})
+                .send({ products: [{ nada: 'nada' }] })
                 .set({ 'x-token': token })
                 .end(function (err: any, res: any) {
                     expect(res).to.have.status(400);
@@ -127,7 +127,6 @@ describe('ProductTest: ', () => {
                 });
         });
     });
-
 
     describe('get my orders', () => {
         it('should get my orders ', (done) => {
@@ -151,28 +150,10 @@ describe('ProductTest: ', () => {
                 .end(function (err: any, res: any) {
                     expect(res).to.have.status(200);
                     expect(res.body.ok).to.equals(true);
-                    expect(res.body.orders.length).to.equals(10);
-                    done();
-                });
-        });
-        it('should return array with 1 order cause there are 11 order and each page has 10 orders', (done) => {
-            chai.request(url)
-                .get('/order/unfinished?page=2')
-                .set({ 'x-token': token })
-                .end(function (err: any, res: any) {
-                    expect(res).to.have.status(200);
-                    expect(res.body.ok).to.equals(true)
-                    expect(res.body.orders.length).to.equals(1);
-                    done();
-                });
-        });
-        it('should return an error invalid page', (done) => {
-            chai.request(url)
-                .get('/order/unfinished?page=-1')
-                .set({ 'x-token': token })
-                .end(function (err: any, res: any) {
-                    expect(res).to.have.status(400);
-                    expect(res.body.ok).to.equals(false)
+                    expect(res.body.orders.length).to.equals(11);
+                    res.body.orders.forEach((order: IOrder) => {
+                        expect(order.done).to.equals(false);
+                    });
                     done();
                 });
         });
@@ -262,8 +243,8 @@ describe('ProductTest: ', () => {
                     expect(res).to.have.status(200);
                     expect(res.body.ok).to.equals(true);
                     expect(res.body.orders.length).to.equals(5);
-                    res.body.orders.forEach((element:any) => {
-                    expect(element.client).to.equals(String(users[1]._id));
+                    res.body.orders.forEach((element: any) => {
+                        expect(element.client).to.equals(String(users[1]._id));
                     });
                     done();
                 });
@@ -302,8 +283,8 @@ describe('ProductTest: ', () => {
                     expect(res).to.have.status(200);
                     expect(res.body.ok).to.equals(true);
                     expect(res.body.orders.length).to.equals(1);
-                    res.body.orders.forEach((element:any) => {
-                    expect(element.client).to.equals(String(users[0]._id));
+                    res.body.orders.forEach((element: any) => {
+                        expect(element.client).to.equals(String(users[0]._id));
                     });
                     done();
                 });
