@@ -21,11 +21,12 @@ orderRoutes.get('/myOrders', [verificaToken], async (req: any, res: Response, ne
         })
     }
 })
+
 orderRoutes.get('/history', [verificacionTokenEmployee], async (req: any, res: Response, next: NextFunction) => {
     try {
         let page = Number(req.query.page - 1) || 0;
         let skip = page * 10;
-        const orders = await Order.find().sort({ _id: -1 }).limit(10).skip(skip).populate('products.product').populate('employee', '-password').populate('client','-password').exec();
+        const orders = await Order.find().sort({ _id: -1 }).limit(10).skip(skip).populate('products.product').populate('employee', '-password').populate('client','-password').populate('employeeMarkReady','-password').exec();
         return res.json({
             ok: true,
             orders
@@ -40,7 +41,7 @@ orderRoutes.get('/history', [verificacionTokenEmployee], async (req: any, res: R
 
 orderRoutes.get('/unfinished', [verificacionTokenEmployee], async (req: any, res: Response, next: NextFunction) => {
     try {
-        const orders = await Order.find({ done: false }).sort({ _id: -1 }).exec();
+        const orders = await Order.find({ done: false }).sort({ _id: -1 }).populate('products.product').populate('employee', '-password').populate('client','-password').populate('employeeMarkReady','-password').exec();
         return res.json({
             ok: true,
             orders
@@ -172,6 +173,31 @@ orderRoutes.post('/markAsReady/:idOrder', [verificacionTokenEmployee], async (re
         order.ready = true;
         order.employeeMarkReady = req.user._id;
         order.readyDate = new Date();
+        Order.findByIdAndUpdate(idOrder, order).exec(async orderDB => {
+            return res.json({
+                ok: true,
+                order: await Order.findById(idOrder).exec()
+            })
+        })
+    } catch (error) {
+        return res.status(404).json({
+            ok: false,
+            message: 'order not found'
+        })
+    }
+});
+
+orderRoutes.post('/markAsNoReady/:idOrder', [verificacionTokenEmployee], async (req: any, res: Response, next: NextFunction) => {
+    const idOrder = req.params.idOrder;
+    let order: any;
+    try {
+        order = await Order.findById(idOrder).exec();
+        if (!order) {
+            throw 'error'
+        }
+        order.ready = false;
+        order.employeeMarkReady = null;
+        order.readyDate = null;
         Order.findByIdAndUpdate(idOrder, order).exec(async orderDB => {
             return res.json({
                 ok: true,
