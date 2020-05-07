@@ -207,7 +207,6 @@ userRoutes.get('/me', [verificaToken], async (req: any, res: Response) => {
 
 userRoutes.post('/changeRange/:idUser', [verificacionTokenAdmin], async (req: any, res: Response) => {
     const idUser = req.params.idUser;
-    console.log(req.body);
     
     let userDB;
     try {
@@ -241,7 +240,6 @@ userRoutes.post('/changeRange/:idUser', [verificacionTokenAdmin], async (req: an
         admin: req.body.admin, 
         employee: req.body.employee
     }
-    console.log(user);
     
     try {
         User.findByIdAndUpdate(idUser, user, { new: true },async (err, userDB) => {
