@@ -18,16 +18,17 @@ describe('UserTest: ', () => {
                     const user = {
                         name: 'testing' + i,
                         mail: 'testing' + i,
-                        password: bcrypt.hashSync('123456', 10)
+                        uid:i
                     }
                     users.push(user);
                 }
                 const user = {
-                    name: 'admin',
-                    mail: 'admin',
+                    name: 'Ignacio Belmonte',
+                    mail: 'belmonteperona@gmail.com',
+                    uid:'113857485189568934662',
+                    img: 'https://lh3.googleusercontent.com/a-/AOh14GhO_lwilOXsSx--2I0yvXEgUE9dYZHLqTlRpMcd49Q=s96-c',
                     admin: true,
                     employee: true,
-                    password: bcrypt.hashSync('123456', 10)
                 }
                 users.push(user);
                 User.create(users).then((usersDB) => {
@@ -43,7 +44,7 @@ describe('UserTest: ', () => {
             it('should insert a user', (done) => {
                 chai.request(url)
                     .post('/user/create')
-                    .send({ name: 'user1', mail: "user1@mail", password: '123456' })
+                    .send({ name: 'user1', mail: "user1@mail", uid: '123456' })
                     .end(function (err: any, res: any) {
                         expect(res).to.have.status(200);
                         expect(res.ok).to.equals(true);
@@ -55,7 +56,7 @@ describe('UserTest: ', () => {
             it('should receive an error, empty mail', (done) => {
                 chai.request(url)
                     .post('/user/create')
-                    .send({ name: 'user1', password: '123456' })
+                    .send({ name: 'user1' })
                     .end(function (err: any, res: any) {
                         expect(res).to.have.status(400);
                         expect(res.ok).to.equals(false)
@@ -66,7 +67,7 @@ describe('UserTest: ', () => {
             it('should receive  error 400 empty field', (done) => {
                 chai.request(url)
                     .post('/user/create')
-                    .send({ mail: "user2@mail", password: '123456' })
+                    .send({ mail: "user2@mail", name: '123456' })
                     .end(function (err: any, res: any) {
                         expect(res).to.have.status(400);
                         expect(res.ok).to.equals(false)
@@ -74,10 +75,10 @@ describe('UserTest: ', () => {
                     });
             });
 
-            it('should receive  error 400 duplicated mail', (done) => {
+            it('should receive  error 400 duplicated id', (done) => {
                 chai.request(url)
                     .post('/user/create')
-                    .send({ name: 'user1', mail: users[0].mail, password: '123456' })
+                    .send({ name: 'user1', mail: 'mail', uid: users[0].uid })
                     .end(function (err: any, res: any) {
                         expect(res).to.have.status(400);
                         expect(res.ok).to.equals(false)
@@ -138,7 +139,7 @@ describe('UserTest: ', () => {
             it('Shold verificate user and return token', (done) => {
                 chai.request(url)
                     .post(`/user/login`)
-                    .send({ mail: users[0].mail, password: '123456' })
+                    .send({uid: users[0].uid })
                     .end(function (err: any, res: any) {
                         expect(res).to.have.status(200);
                         expect(res.body.ok).to.equals(true);
@@ -147,10 +148,10 @@ describe('UserTest: ', () => {
                     });
             })
 
-            it('Shold return erro 400 mail invalid', (done) => {
+            it('Shold return erro 400 uid invalid', (done) => {
                 chai.request(url)
                     .post(`/user/login`)
-                    .send({ mail: 222, password: '123456' })
+                    .send({ uid: 222})
                     .end(function (err: any, res: any) {
                         expect(res).to.have.status(400);
                         expect(res.body.ok).to.equals(false);
@@ -158,42 +159,11 @@ describe('UserTest: ', () => {
                     });
             })
 
-            it('Shold return error 400 mail empty', (done) => {
-                chai.request(url)
-                    .post(`/user/login`)
-                    .send({ password: '123456' })
-                    .end(function (err: any, res: any) {
-                        expect(res).to.have.status(400);
-                        expect(res.body.ok).to.equals(false);
-                        done();
-                    });
-            })
 
-            it('Shold return error 400 password empty', (done) => {
-                chai.request(url)
-                    .post(`/user/login`)
-                    .send({ mail: 'mail' })
-                    .end(function (err: any, res: any) {
-                        expect(res).to.have.status(400);
-                        expect(res.body.ok).to.equals(false);
-                        done();
-                    });
-            })
 
             it('Shold return error 400 no parameters', (done) => {
                 chai.request(url)
                     .post(`/user/login`)
-                    .end(function (err: any, res: any) {
-                        expect(res).to.have.status(400);
-                        expect(res.body.ok).to.equals(false);
-                        done();
-                    });
-            })
-
-            it('Shold return error 400 no mail invalid', (done) => {
-                chai.request(url)
-                    .post(`/user/login`)
-                    .send({ mail: 222, password: 123456 })
                     .end(function (err: any, res: any) {
                         expect(res).to.have.status(400);
                         expect(res.body.ok).to.equals(false);
@@ -206,7 +176,7 @@ describe('UserTest: ', () => {
             before('Login like admin user to do the operations', (done) => {
                 chai.request(url)
                     .post(`/user/login`)
-                    .send({ mail: users[5].mail, password: '123456' })
+                    .send({ uid:users[5].uid })
                     .end(function (err: any, res: any) {
                         token = res.body.token;
                         done();
@@ -279,7 +249,7 @@ describe('UserTest: ', () => {
             it('Should return error user 1 is not admin', (done) => {
                 chai.request(url)
                     .post(`/user/login`)
-                    .send({ mail: users[1].mail, password: '123456' })
+                    .send({ uid:users[4].uid })
                     .end(function (err: any, res: any) {
                         let tokenUser1 = res.body.token;
                         chai.request(url)

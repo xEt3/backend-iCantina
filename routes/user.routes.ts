@@ -9,7 +9,7 @@ const userRoutes = Router();
 
 //Crear un usuario
 userRoutes.post('/create', async (req: Request, res: Response) => {
-    if (!req.body.name || !req.body.mail || !req.body.password || !req.body.password) {
+    if (!req.body.name || !req.body.mail || !req.body.uid) {
         return res.status(400).json({
             ok: false,
             error: 'Shold indicate name, email, and password'
@@ -17,11 +17,11 @@ userRoutes.post('/create', async (req: Request, res: Response) => {
     }
     let user: any;
     try {
-        user = await User.findOne({ mail: req.body.mail }).exec()
+        user = await User.findOne({ uid: req.body.uid }).exec()
     } catch (error) {
         return res.status(400).json({
             ok: false,
-            error: 'mail error'
+            error: 'uid error'
         })
     }
     if (user) {
@@ -33,13 +33,15 @@ userRoutes.post('/create', async (req: Request, res: Response) => {
     const usr = {
         name: req.body.name,
         mail: req.body.mail,
-        password: bcrypt.hashSync(req.body.password, 10)
+        uid: req.body.uid,
+        img: req.body.img
     }
     User.create(usr).then(userDB => {
         const userToken = Token.getJwtToken({
             _id: userDB.id,
             name: userDB.name,
             mail: userDB.mail,
+            uid: userDB.uid
         });
         res.json({
             ok: true,
@@ -99,7 +101,7 @@ userRoutes.get('/get/:idUser', async (req: any, res: Response, next: NextFunctio
 userRoutes.post('/login', (req: Request, res: Response) => {
     const body = req.body;
     try {
-        User.findOne({ mail: body.mail }, (err, userDB) => {
+        User.findOne({ uid: body.uid }, (err, userDB) => {
             if (err) {
                 return res.status(404).json({
                     ok: false,
@@ -109,27 +111,21 @@ userRoutes.post('/login', (req: Request, res: Response) => {
             if (!userDB) {
                 return res.status(400).json({
                     ok: false,
-                    message: 'User/password incorrect'
+                    message: 'Userincorrect'
                 });
             }
-            if (userDB.comparePassword(body.password)) {
-                const userToken = Token.getJwtToken({
-                    _id: userDB.id,
-                    name: userDB.name,
-                    mail: userDB.mail,
-                    admin: userDB.admin,
-                    employee: userDB.employee
-                });
-                res.json({
-                    ok: true,
-                    token: userToken
-                })
-            } else {
-                return res.status(400).json({
-                    ok: false,
-                    message: 'User/password incorrect'
-                });
-            }
+            const userToken = Token.getJwtToken({
+                _id: userDB.id,
+                name: userDB.name,
+                mail: userDB.mail,
+                admin: userDB.admin,
+                employee: userDB.employee
+            });
+            res.json({
+                ok: true,
+                token: userToken
+            })
+
         });
     } catch (error) {
         return res.status(400).json({
@@ -207,7 +203,7 @@ userRoutes.get('/me', [verificaToken], async (req: any, res: Response) => {
 
 userRoutes.post('/changeRange/:idUser', [verificacionTokenAdmin], async (req: any, res: Response) => {
     const idUser = req.params.idUser;
-    
+
     let userDB;
     try {
         userDB = await User.findById(idUser).exec();
@@ -217,32 +213,31 @@ userRoutes.post('/changeRange/:idUser', [verificacionTokenAdmin], async (req: an
             error
         });
     }
-    if(!userDB){
+    if (!userDB) {
         return res.status(404).json({
             ok: false,
             message: 'User not found'
         });
     }
-
-    if(req.body.admin===null && req.body.employee===null){
+    if (req.body.admin === undefined && req.body.employee === undefined) {
         return res.status(400).json({
             ok: false,
             message: 'Empty parameters'
         });
     }
-    if(req.body.admin===null){
-        req.body.admin=userDB.admin;
+    if (req.body.admin === undefined) {
+        req.body.admin = userDB.admin;
     }
-    if(req.body.employee===null){
-        req.body.employee=userDB.employee;
+    if (req.body.employee === undefined) {
+        req.body.employee = userDB.employee;
     }
     const user = {
-        admin: req.body.admin, 
+        admin: req.body.admin,
         employee: req.body.employee
     }
-    
+
     try {
-        User.findByIdAndUpdate(idUser, user, { new: true },async (err, userDB) => {
+        User.findByIdAndUpdate(idUser, user, { new: true }, async (err, userDB) => {
             if (err) {
                 return res.status(400).json({
                     ok: false,

@@ -278,11 +278,4 @@ orderRoutes.get('/employee/:idEmployee', [verificacionTokenEmployee], async (req
     }
 })
 
-
-
-
-
-
-
-
 export default orderRoutes;

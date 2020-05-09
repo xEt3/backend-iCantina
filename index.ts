@@ -6,6 +6,7 @@ import fileUpload from 'express-fileupload';
 import cors from 'cors';
 import productRoutes from './routes/product.routes';
 import orderRoutes from './routes/order.routes';
+import googleRoutes from './routes/google.routes';
 
 const server = new Server();
 
@@ -24,6 +25,7 @@ server.app.use(cors({ origin: true, credentials: true }))
 server.app.use('/user', userRoutes);
 server.app.use('/product', productRoutes);
 server.app.use('/order', orderRoutes);
+server.app.use('/google', googleRoutes);
 
 //Conectar db
 mongoose.connect('mongodb://localhost:27017/testiCantina',

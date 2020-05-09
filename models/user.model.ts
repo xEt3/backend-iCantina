@@ -9,16 +9,20 @@ const userSchema = new Schema({
     },
     mail: {
         type: String,
-        unique: true,
         required: [true, 'mail is required']
     },
-    password: {
+    img: {
         type: String,
-        required: [true, 'password is required']
+        default:null
     },
     admin: {
         type: Boolean,
         default: false
+    },
+    uid:{
+        type:String,
+        unique: true,
+        required: [true, 'uid is required']
     },
     employee: {
         type: Boolean,
@@ -29,22 +33,19 @@ const userSchema = new Schema({
 });
 userSchema.methods.toJSON = function () {
     var obj = this.toObject();
-    delete obj.password;
+    delete obj.uid;
     return obj;
 }
 
-userSchema.method('comparePassword', function (password: string = ''): boolean {
-    return bcrypt.compareSync(password, this.password);
-});
 
 export interface Iuser extends Document {
     name: string,
     mail: string,
-    password: string,
+    img: string,
+    uid:string,
     admin: boolean,
     employee: boolean,
     imgsTemp: string[]
-    comparePassword(password: string): boolean
 }
 
 export const User = model<Iuser>('User', userSchema)
