@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt'
 import { Token } from '../classes/token';
 import { verificaToken, verificacionTokenAdmin } from '../middlewares/autenticacion';
 import { User, Iuser } from "../models/user.model";
+import { Order } from '../models/order.model';
 
 
 const userRoutes = Router();
@@ -12,7 +13,7 @@ userRoutes.post('/create', async (req: Request, res: Response) => {
     if (!req.body.name || !req.body.mail || !req.body.uid) {
         return res.status(400).json({
             ok: false,
-            error: 'Shold indicate name, email, and password'
+            error: 'Shold indicate name, email, and uid'
         })
     }
     let user: any;
@@ -262,6 +263,31 @@ userRoutes.post('/changeRange/:idUser', [verificacionTokenAdmin], async (req: an
         });
     }
 
+});
+
+userRoutes.delete('/deleteUser/:idUser', [verificacionTokenAdmin], async (req: any, res: Response) => {
+    const idUser = req.params.idUser;
+    let userDB;
+    try {
+        userDB = await User.findByIdAndDelete(idUser).exec();
+        if(userDB){
+            let ordersUser=await Order.findOneAndDelete({client:idUser}).exec()
+            while(ordersUser){
+                ordersUser=await Order.findOneAndDelete({client:idUser}).exec()
+            }
+            res.redirect('/user')
+        }else{
+            return res.status(404).json({
+                ok: false,
+                message: 'User not found'
+            });
+        }
+    } catch (error) {
+        return res.status(404).json({
+            ok: false,
+            error
+        });
+    }
 });
 
 export default userRoutes;
