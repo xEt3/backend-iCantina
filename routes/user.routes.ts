@@ -99,9 +99,8 @@ userRoutes.get('/get/:idUser', async (req: any, res: Response, next: NextFunctio
 
 //Login
 userRoutes.post('/login', (req: Request, res: Response) => {
-    const body = req.body;
     try {
-        User.findOne({ uid: body.uid }, (err, userDB) => {
+        User.findOne({ uid: req.body.uid }, (err, userDB) => {
             if (err) {
                 return res.status(404).json({
                     ok: false,
@@ -121,6 +120,7 @@ userRoutes.post('/login', (req: Request, res: Response) => {
                 admin: userDB.admin,
                 employee: userDB.employee
             });
+            console.log(userDB.mail+" login")
             res.json({
                 ok: true,
                 token: userToken
