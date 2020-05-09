@@ -27,6 +27,41 @@ productRoutes.get('/', [verificacionTokenEmployee], async (req: any, res: Respon
     }
 })
 
+productRoutes.get('/availables/search/:term', async (req: any, res: Response, next: NextFunction) => {
+    const term = req.params.term;
+    try {
+        let page = Number(req.query.page - 1) || 0;
+        let saltar = page * 10;
+        const products = await Product.find({ name: { $regex: term, $options: "i" },available:true}).limit(10).skip(saltar).sort({ _id: -1 }).exec();
+        res.json({
+            ok: true,
+            products
+        })
+    } catch (error) {
+        res.status(400).json({
+            ok: false,
+            error: 'invalid page'
+        })
+    }
+})
+productRoutes.get('/search/:term', async (req: any, res: Response, next: NextFunction) => {
+    const term = req.params.term;
+    try {
+        let page = Number(req.query.page - 1) || 0;
+        let saltar = page * 10;
+        const products = await Product.find({ name: { $regex: term, $options: "i" }}).limit(10).skip(saltar).sort({ _id: -1 }).exec();
+        res.json({
+            ok: true,
+            products
+        })
+    } catch (error) {
+        res.status(400).json({
+            ok: false,
+            error: 'invalid page'
+        })
+    }
+})
+
 productRoutes.get('/availables', async (req: any, res: Response, next: NextFunction) => {
     try {
         let page = Number(req.query.page - 1) || 0;

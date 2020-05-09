@@ -24,22 +24,22 @@ describe('ProductTest: ', () => {
         mongoose.connect('mongodb://localhost:27017/testiCantina', { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
             mongoose.connection.db.dropDatabase(async function () {
                 const user = {
-                    name: 'admin',
-                    mail: 'admin',
+                    name: 'Ignacio Belmonte',
+                    mail: 'belmonteperona@gmail.com',
+                    uid:'113857485189568934662',
+                    img: 'https://lh3.googleusercontent.com/a-/AOh14GhO_lwilOXsSx--2I0yvXEgUE9dYZHLqTlRpMcd49Q=s96-c',
                     admin: true,
                     employee: true,
-                    password: bcrypt.hashSync('123456', 10)
                 }
                 users.push(user);
                 for (let i = 0; i < 5; i++) {
                     const user = {
                         name: 'testing' + i,
                         mail: 'testing' + i,
-                        password: bcrypt.hashSync('123456', 10)
+                        uid:i
                     }
                     users.push(user);
                 }
-                users.push(user);
                 await User.create(users).then((usuarios) => {
                     users = usuarios;
                 });
@@ -90,7 +90,7 @@ describe('ProductTest: ', () => {
     it('should generate token', (done) => {
         chai.request(url)
             .post(`/user/login`)
-            .send({ mail: users[0].mail, password: '123456' })
+            .send({ uid: users[0].uid })
             .end(function (err: any, res: any) {
                 token = res.body.token;
                 expect(res).to.have.status(200);
