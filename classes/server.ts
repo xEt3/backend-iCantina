@@ -8,14 +8,12 @@ export default class Server {
 
     public app: express.Application;
     public port: number = 3000;
-    privateKey = fs.readFileSync('key.pem', 'utf8');
-    certificate = fs.readFileSync('cert.pem', 'utf8');
+    privateKey = fs.readFileSync('play.bitcraft.es_privkey.pem', 'utf8');
+    certificate = fs.readFileSync('play.bitcraft.es_cert.pem', 'utf8');
     credentials = { key: this.privateKey, cert: this.certificate };
 
     constructor() {
         this.app = express();
-
-
     }
 
     start(callback: Function) {
