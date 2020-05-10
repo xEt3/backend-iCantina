@@ -32,6 +32,7 @@ mongoose.connect('mongodb://localhost:27017/testiCantina',
     { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, (err) => {
         if (err) {
             console.error('Error: Cant connect with data base');
+            console.error('Error: Cant connect with data base');
         } else {
             console.log('DB online')
         }
