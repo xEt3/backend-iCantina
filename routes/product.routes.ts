@@ -32,7 +32,7 @@ productRoutes.get('/availables/search/:term', async (req: any, res: Response, ne
     try {
         let page = Number(req.query.page - 1) || 0;
         let saltar = page * 10;
-        const products = await Product.find({ name: { $regex: term, $options: "i" },available:true}).limit(10).skip(saltar).sort({ _id: -1 }).exec();
+        const products = await Product.find({ name: { $regex: term, $options: "i" }, available: true }).limit(10).skip(saltar).sort({ _id: -1 }).exec();
         res.json({
             ok: true,
             products
@@ -49,7 +49,7 @@ productRoutes.get('/search/:term', async (req: any, res: Response, next: NextFun
     try {
         let page = Number(req.query.page - 1) || 0;
         let saltar = page * 10;
-        const products = await Product.find({ name: { $regex: term, $options: "i" }}).limit(10).skip(saltar).sort({ _id: -1 }).exec();
+        const products = await Product.find({ name: { $regex: term, $options: "i" } }).limit(10).skip(saltar).sort({ _id: -1 }).exec();
         res.json({
             ok: true,
             products
@@ -161,6 +161,9 @@ productRoutes.post('/upload', [verificacionTokenEmployee], async (req: any, res:
         }
         usr.imgsTemp.push(imageName);
         await User.findByIdAndUpdate(usr._id, usr).exec();
+        //Control image size with file.size TO-DO
+        console.log('Uploaded image from user ' + usr.name + ',image name :' + imageName + ' ,size: ' + file.size);
+
         return res.json({
             ok: true,
             ImageName: imageName,
@@ -267,12 +270,12 @@ productRoutes.post('/update/:idProduct', [verificacionTokenEmployee], async (req
         product = {
             name: req.body.name || productdb.name,
             price: req.body.price || productdb.price,
-            available: req.body.available 
+            available: req.body.available
         }
-        if(product.available === null){
-            product.available=productdb.available
+        if (product.available === null) {
+            product.available = productdb.available
         }
-        
+
     } catch (error) {
         return res.status(404).json({
             ok: false,
@@ -293,9 +296,11 @@ productRoutes.post('/update/:idProduct', [verificacionTokenEmployee], async (req
                     message: 'Invalid ID'
                 });
             }
+            const product = await Product.findById(idProduct).exec();
+            console.log("Update product ", product)
             res.json({
                 ok: true,
-                product: await Product.findById(idProduct).exec()
+                product
             });
         });
     } catch (error) {

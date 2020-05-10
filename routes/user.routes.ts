@@ -121,7 +121,7 @@ userRoutes.post('/login', (req: Request, res: Response) => {
                 admin: userDB.admin,
                 employee: userDB.employee
             });
-            console.log(userDB.mail+" login")
+            console.log(userDB.mail + " login")
             res.json({
                 ok: true,
                 token: userToken
@@ -171,6 +171,7 @@ userRoutes.post('/update', verificaToken, async (req: any, res: Response) => {
                 name: user.name,
                 mail: user.mail,
             });
+            console.log('Update user ', user)
             res.json({
                 ok: true,
                 token: userToken,
@@ -236,7 +237,9 @@ userRoutes.post('/changeRange/:idUser', [verificacionTokenAdmin], async (req: an
         admin: req.body.admin,
         employee: req.body.employee
     }
-
+    if (user.admin === true) {
+        user.employee = true;
+    }
     try {
         User.findByIdAndUpdate(idUser, user, { new: true }, async (err, userDB) => {
             if (err) {
@@ -251,6 +254,7 @@ userRoutes.post('/changeRange/:idUser', [verificacionTokenAdmin], async (req: an
                     message: 'Invalid ID'
                 });
             }
+            console.log('Update range user ' + userDB.name + ", new ranges: " + user)
             res.json({
                 ok: true,
                 user: await User.findById(idUser).exec()
@@ -270,13 +274,14 @@ userRoutes.delete('/deleteUser/:idUser', [verificacionTokenAdmin], async (req: a
     let userDB;
     try {
         userDB = await User.findByIdAndDelete(idUser).exec();
-        if(userDB){
-            let ordersUser=await Order.findOneAndDelete({client:idUser}).exec()
-            while(ordersUser){
-                ordersUser=await Order.findOneAndDelete({client:idUser}).exec()
+        if (userDB) {
+            let ordersUser = await Order.findOneAndDelete({ client: idUser }).exec()
+            while (ordersUser) {
+                ordersUser = await Order.findOneAndDelete({ client: idUser }).exec()
             }
             res.redirect('/user')
-        }else{
+        } else {
+            console.log('delete user: ',userDB);
             return res.status(404).json({
                 ok: false,
                 message: 'User not found'

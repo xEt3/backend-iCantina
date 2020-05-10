@@ -65,6 +65,7 @@ orderRoutes.delete('/remove/:idOrder', [verificacionTokenEmployee], async (req: 
     if (order) {
         Order.findByIdAndDelete(idOrder).exec().then(orderDeleted => {
             if (orderDeleted) {
+                console.log('Remove order '+idOrder+' by user '+req.user.mail);
                 return res.json({
                     ok: true,
                     order: orderDeleted
@@ -120,6 +121,8 @@ orderRoutes.post('/', [verificaToken], async (req: any, res: Response, next: Nex
         price
     }
     Order.create(order).then(async orderDB => {
+        console.log('Create new order from user '+req.user.mail,orderDB);
+        
         return res.json({
             ok: true,
             order: orderDB
@@ -149,9 +152,11 @@ orderRoutes.post('/markAsDone/:idOrder', [verificacionTokenEmployee], async (req
         order.deliverDate = new Date();
         order.employee = req.user._id;
         Order.findByIdAndUpdate(idOrder, order).exec(async orderDB => {
+            const orderNew= await Order.findById(idOrder).exec();
+            console.log('User '+req.user.mail+' mark as done order ',orderNew)
             return res.json({
                 ok: true,
-                order: await Order.findById(idOrder).exec()
+                order: orderNew
             })
         })
     } catch (error) {
@@ -174,9 +179,11 @@ orderRoutes.post('/markAsReady/:idOrder', [verificacionTokenEmployee], async (re
         order.employeeMarkReady = req.user._id;
         order.readyDate = new Date();
         Order.findByIdAndUpdate(idOrder, order).exec(async orderDB => {
+            const orderNew= await Order.findById(idOrder).exec();
+            console.log('User '+req.user.mail+' mark as ready order ',orderNew)
             return res.json({
                 ok: true,
-                order: await Order.findById(idOrder).exec()
+                order: orderNew
             })
         })
     } catch (error) {
@@ -198,10 +205,14 @@ orderRoutes.post('/markAsNoReady/:idOrder', [verificacionTokenEmployee], async (
         order.ready = false;
         order.employeeMarkReady = null;
         order.readyDate = null;
+    
         Order.findByIdAndUpdate(idOrder, order).exec(async orderDB => {
+            
+            const orderNew= await Order.findById(idOrder).exec();
+            console.log('User '+req.user.mail+' mark as no ready order ',orderNew)
             return res.json({
                 ok: true,
-                order: await Order.findById(idOrder).exec()
+                order: orderNew
             })
         })
     } catch (error) {
