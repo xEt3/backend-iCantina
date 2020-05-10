@@ -65,7 +65,6 @@ orderRoutes.delete('/remove/:idOrder', [verificacionTokenEmployee], async (req: 
     if (order) {
         Order.findByIdAndDelete(idOrder).exec().then(orderDeleted => {
             if (orderDeleted) {
-                console.log('Remove order '+idOrder+' by user '+req.user.mail);
                 return res.json({
                     ok: true,
                     order: orderDeleted
