@@ -22,6 +22,5 @@ export default class Server {
         const credentials = { key: privateKey, cert: certificate ,ca:ca};
         const httpsServer = https.createServer(credentials, this.app);
         httpsServer.listen(this.port,callback());
-        
     }
 }
