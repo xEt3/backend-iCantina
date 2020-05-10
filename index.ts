@@ -17,7 +17,6 @@ server.app.use(bodyParser.json());
 
 //FileUpload
 server.app.use(fileUpload());
-
 // Configurar cors
 server.app.use(cors({ origin: true, credentials: true }))
 
