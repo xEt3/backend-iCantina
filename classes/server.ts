@@ -8,17 +8,18 @@ export default class Server {
 
     public app: express.Application;
     public port: number = 3000;
-    privateKey = fs.readFileSync('play.bitcraft.es_privkey.pem', 'utf8');
-    certificate = fs.readFileSync('play.bitcraft.es_cert.pem', 'utf8');
-    credentials = { key: this.privateKey, cert: this.certificate };
+
 
     constructor() {
         this.app = express();
     }
 
     start(callback: Function) {
+        const privateKey = fs.readFileSync('play.bitcraft.es_privkey.pem', 'utf8');
+        const certificate = fs.readFileSync('play.bitcraft.es_cert.pem', 'utf8');
+        const ca = fs.readFileSync('/etc/letsencrypt/path/to/chain.pem')
         const httpServer = http.createServer(this.app);
-        const credentials = { key: this.privateKey, cert: this.certificate };
+        const credentials = { key: privateKey, cert: certificate ,ca:ca};
         const httpsServer = https.createServer(credentials, this.app);
         httpsServer.listen(this.port,callback());
         
