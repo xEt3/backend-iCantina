@@ -10,7 +10,7 @@ let chai = require('chai');
 let chaiHttp = require('chai-http');
 const expect = require('chai').expect;
 chai.use(chaiHttp);
-const url = 'http://localhost:3000';
+const url = 'https://127.0.0.1:443';
 let users: any[] = []
 let products: any[] = [];
 let orders: any[] = [];

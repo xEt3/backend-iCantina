@@ -1,9 +1,9 @@
 import { Router, Request, Response, NextFunction } from "express";
-import bcrypt from 'bcrypt'
 import { Token } from '../classes/token';
 import { verificaToken, verificacionTokenAdmin } from '../middlewares/autenticacion';
-import { User, Iuser } from "../models/user.model";
+import { User } from "../models/user.model";
 import { Order } from '../models/order.model';
+import PushNotification from '../classes/push-notifications';
 
 
 const userRoutes = Router();
@@ -205,7 +205,7 @@ userRoutes.get('/me', [verificaToken], async (req: any, res: Response) => {
 
 userRoutes.post('/changeRange/:idUser', [verificacionTokenAdmin], async (req: any, res: Response) => {
     const idUser = req.params.idUser;
-
+    let range:string;
     let userDB;
     try {
         userDB = await User.findById(idUser).exec();
@@ -239,6 +239,11 @@ userRoutes.post('/changeRange/:idUser', [verificacionTokenAdmin], async (req: an
     }
     if (user.admin === true) {
         user.employee = true;
+        range='Administrador'
+    }else if(user.employee==true){
+        range='Empleado'
+    }else{
+        range='Cliente'
     }
     try {
         User.findByIdAndUpdate(idUser, user, { new: true }, async (err, userDB) => {
@@ -259,6 +264,8 @@ userRoutes.post('/changeRange/:idUser', [verificacionTokenAdmin], async (req: an
                 ok: true,
                 user: await User.findById(idUser).exec()
             });
+            PushNotification.sendNotificationToUser('Cambio de rango',`${req.user.name} te ha cambiado el rango a ${range}`,idUser);
+            return;
         });
     } catch (error) {
         return res.status(404).json({

@@ -3,6 +3,7 @@ import { verificaToken, verificacionTokenEmployee } from '../middlewares/autenti
 import { Product } from '../models/product.model';
 import { User } from '../models/user.model';
 import { Order } from '../models/order.model';
+import PushNotification from '../classes/push-notifications';
 
 
 const orderRoutes = Router();
@@ -96,6 +97,7 @@ orderRoutes.post('/', [verificaToken], async (req: any, res: Response, next: Nex
             message: 'invalid order, has not products '
         })
     }
+    let productsNames='';
     try {
         for (let i = 0; i < products.length; i++) {
             let product = await Product.findById(products[i].product).exec();
@@ -103,6 +105,7 @@ orderRoutes.post('/', [verificaToken], async (req: any, res: Response, next: Nex
                 throw 'error'
             }
             price += product.price * products[i].amount;
+            productsNames+=product.name+', '
         }
         if (price === 0) {
             throw 'error'
@@ -120,8 +123,8 @@ orderRoutes.post('/', [verificaToken], async (req: any, res: Response, next: Nex
         price
     }
     Order.create(order).then(async orderDB => {
-        console.log('Create new order from user '+req.user.mail,orderDB);
-        
+        console.log('Create new order from user ' + req.user.mail, orderDB);
+        PushNotification.sendNotificationToAllEmployees('Nuevo Pedido!',`${req.user.name} ha pedido ${productsNames.substring(0,productsNames.length-2)}`);
         return res.json({
             ok: true,
             order: orderDB
@@ -151,12 +154,14 @@ orderRoutes.post('/markAsDone/:idOrder', [verificacionTokenEmployee], async (req
         order.deliverDate = new Date();
         order.employee = req.user._id;
         Order.findByIdAndUpdate(idOrder, order).exec(async orderDB => {
-            const orderNew= await Order.findById(idOrder).exec();
-            console.log('User '+req.user.mail+' mark as done order ',orderNew)
-            return res.json({
+            const orderNew:any = await Order.findById(idOrder).exec();
+            console.log('User ' + req.user.mail + ' mark as done order ', orderNew)
+            res.json({
                 ok: true,
                 order: orderNew
             })
+            PushNotification.sendNotificationToUser('Pedido Entregado!','Tu pedido ha sido entregado por '+req.user.name,orderNew.client);
+            return;
         })
     } catch (error) {
         return res.status(404).json({
@@ -178,12 +183,14 @@ orderRoutes.post('/markAsReady/:idOrder', [verificacionTokenEmployee], async (re
         order.employeeMarkReady = req.user._id;
         order.readyDate = new Date();
         Order.findByIdAndUpdate(idOrder, order).exec(async orderDB => {
-            const orderNew= await Order.findById(idOrder).exec();
-            console.log('User '+req.user.mail+' mark as ready order ',orderNew)
-            return res.json({
+            const orderNew = await Order.findById(idOrder).exec();
+            console.log('User ' + req.user.mail + ' mark as ready order ', orderNew);
+            res.json({
                 ok: true,
                 order: orderNew
             })
+            PushNotification.sendNotificationToUser('Pedido Listo!','Tu pedido esta listo, puedes pasar a recogerlo en la cantina',order.client);
+            return;
         })
     } catch (error) {
         return res.status(404).json({
@@ -204,11 +211,11 @@ orderRoutes.post('/markAsNoReady/:idOrder', [verificacionTokenEmployee], async (
         order.ready = false;
         order.employeeMarkReady = null;
         order.readyDate = null;
-    
+
         Order.findByIdAndUpdate(idOrder, order).exec(async orderDB => {
-            
-            const orderNew= await Order.findById(idOrder).exec();
-            console.log('User '+req.user.mail+' mark as no ready order ',orderNew)
+
+            const orderNew = await Order.findById(idOrder).exec();
+            console.log('User ' + req.user.mail + ' mark as no ready order ', orderNew)
             return res.json({
                 ok: true,
                 order: orderNew

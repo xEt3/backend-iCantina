@@ -1,6 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { Token } from '../classes/token';
-import { verificaToken, verificacionTokenEmployee } from '../middlewares/autenticacion';
+import { verificacionTokenEmployee } from '../middlewares/autenticacion';
 import { Product } from '../models/product.model';
 import FileSystem from '../classes/file-system';
 import { FileUpload } from '../interfaces/file-upload';
