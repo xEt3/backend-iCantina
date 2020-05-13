@@ -249,7 +249,7 @@ orderRoutes.get('/client/:idClient', [verificacionTokenEmployee], async (req: an
     try {
         let page = Number(req.query.page - 1) || 0;
         let skip = page * 10;
-        const orders = await Order.find({ client: idClient }).limit(10).skip(skip).sort({ _id: -1 }).exec();
+        const orders = await Order.find({ client: idClient }).limit(10).skip(skip).sort({ _id: -1 }).populate('products.product').populate('employee').populate('client').populate('employeeMarkReady').exec();
         return res.json({
             ok: true,
             orders
