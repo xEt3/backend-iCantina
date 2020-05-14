@@ -286,7 +286,10 @@ userRoutes.delete('/deleteUser/:idUser', [verificacionTokenAdmin], async (req: a
             while (ordersUser) {
                 ordersUser = await Order.findOneAndDelete({ client: idUser }).exec()
             }
-            res.redirect('/user')
+            return res.json({
+                ok:true,
+                user:userDB
+            })
         } else {
             console.log('delete user: ',userDB);
             return res.status(404).json({
