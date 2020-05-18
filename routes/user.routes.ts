@@ -97,6 +97,24 @@ userRoutes.get('/get/:idUser', async (req: any, res: Response, next: NextFunctio
         })
     }
 })
+//Get user by term
+userRoutes.get('/search/:term', async (req: any, res: Response, next: NextFunction) => {
+    const term = req.params.term;
+    try {
+        let page = Number(req.query.page - 1) || 0;
+        let skip = page * 10;
+        const users = await User.find({ $or:[ {'name': { $regex: term, $options: "i" }},{mail: { $regex: term, $options: "i" }} ]}).limit(10).skip(skip).sort({ _id: -1 }).exec();
+        res.json({
+            ok: true,
+            users: users
+        })
+    } catch (error) {
+        res.status(400).json({
+            ok: false,
+            error: 'invalid page'
+        })
+    }
+})
 
 //Login
 userRoutes.post('/login', (req: Request, res: Response) => {

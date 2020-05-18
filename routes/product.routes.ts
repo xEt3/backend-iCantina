@@ -30,8 +30,8 @@ productRoutes.get('/availables/search/:term', async (req: any, res: Response, ne
     const term = req.params.term;
     try {
         let page = Number(req.query.page - 1) || 0;
-        let saltar = page * 10;
-        const products = await Product.find({ name: { $regex: term, $options: "i" }, available: true }).limit(10).skip(saltar).sort({ _id: -1 }).exec();
+        let skip = page * 10;
+        const products = await Product.find({ name: { $regex: term, $options: "i" }, available: true }).limit(10).skip(skip).sort({ _id: -1 }).exec();
         res.json({
             ok: true,
             products
