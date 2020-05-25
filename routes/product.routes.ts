@@ -43,6 +43,7 @@ productRoutes.get('/availables/search/:term', async (req: any, res: Response, ne
         })
     }
 })
+
 productRoutes.get('/search/:term', async (req: any, res: Response, next: NextFunction) => {
     const term = req.params.term;
     try {
@@ -246,13 +247,13 @@ productRoutes.get('/image/:userid/:img', async (req: any, res: Response, next: N
     const userID = req.params.userid;
     const img = req.params.img;
     const user = await User.findById(userID).exec()
-    if (!user) {
-        return res.status(400).json({
-            ok: false,
-            usuario: user,
-            message: 'usuario not found'
-        })
-    }
+    // if (!user) {
+    //     return res.status(400).json({
+    //         ok: false,
+    //         usuario: user,
+    //         message: 'usuario not found'
+    //     })
+    // }
     const pathImg = fileSystem.getImgUrl(userID, img)  // Si no es correcta la imagen devulve imagen por defecto
     return res.sendFile(pathImg)
 });
