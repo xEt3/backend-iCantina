@@ -29,14 +29,20 @@ const userSchema = new Schema({
         default: false
     }, imgsTemp: [{
         type: String
-    }]
+    }],
+    created: {
+        type: Date
+    }
 });
 userSchema.methods.toJSON = function () {
     var obj = this.toObject();
     delete obj.uid;
     return obj;
 }
-
+userSchema.pre<Iuser>('save', function (next) {
+    this.created = new Date();
+    next();
+});
 
 export interface Iuser extends Document {
     name: string,
@@ -45,7 +51,8 @@ export interface Iuser extends Document {
     uid:string,
     admin: boolean,
     employee: boolean,
-    imgsTemp: string[]
+    imgsTemp: string[],
+    created: Date
 }
 
 export const User = model<Iuser>('User', userSchema)
