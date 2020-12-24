@@ -39,7 +39,6 @@
     "jsonwebtoken": "^8.5.1",
     "mocha": "^8.2.1",
     "mongoose": "^5.9.10",
-    "mongose": "^0.0.2-security",
     "nodemon": "^2.0.6",
     "passport-google": "^0.3.0",
     "passport-google-oauth": "^2.0.0",
