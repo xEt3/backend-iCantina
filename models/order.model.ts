@@ -1,5 +1,8 @@
-
-import { Schema, model, Document } from "mongoose";
+import {
+  Document,
+  model,
+  Schema,
+} from 'mongoose';
 
 const orderSchema = new Schema({
     client: {
@@ -63,12 +66,12 @@ export interface IOrder extends Document {
     products: { product: string, amount: number }[],
     price: number,
     desc: string,
-    done: boolean,
-    created: Date,
-    deliverDate: Date,
-    ready:boolean,
-    employeeMarkReady:string,
-    readyDate:Date
+    done?: boolean,
+    created?: Date,
+    deliverDate?: Date,
+    ready?:boolean,
+    employeeMarkReady?:string,
+    readyDate?:Date
 }
 
 export const Order = model<IOrder>('Order', orderSchema)

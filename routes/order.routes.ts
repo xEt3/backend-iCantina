@@ -1,10 +1,17 @@
-import { Router, Request, Response, NextFunction } from "express";
-import { verificaToken, verificacionTokenEmployee } from '../middlewares/autenticacion';
+import {
+  NextFunction,
+  Response,
+  Router,
+} from 'express';
+
+import PushNotification from '../classes/push-notifications';
+import {
+  verificacionTokenEmployee,
+  verificaToken,
+} from '../middlewares/autenticacion';
+import { Order } from '../models/order.model';
 import { Product } from '../models/product.model';
 import { User } from '../models/user.model';
-import { Order } from '../models/order.model';
-import PushNotification from '../classes/push-notifications';
-
 
 const orderRoutes = Router();
 
