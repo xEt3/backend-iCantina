@@ -19,3 +19,8 @@ services:
             MONGO_INITDB_DATABASE: testiCantina
         logging:
             driver: none
+        volumes:
+            - volumen_mongo:/data/db
+
+volumes:
+  volumen_mongo:
