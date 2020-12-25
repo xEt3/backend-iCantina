@@ -15,12 +15,10 @@ services:
         image: mongo
         ports:
             - "27017:27017"
-        environment:
-            MONGO_INITDB_DATABASE: testiCantina
+#        environment:
+#            MONGO_INITDB_DATABASE: testiCantina
         logging:
             driver: none
         volumes:
-            - volumen_mongo:/data/db
+            - /opt/iCantina/mongo:/data/db
 
-volumes:
-  volumen_mongo:
