@@ -1,14 +1,14 @@
 import express from 'express';
+
+import { config } from '../config';
+
 var fs = require('fs');
-var http = require('http');
-var https = require('https');
 
 
 export default class Server {
 
     public app: express.Application;
-    public port: number = 3000;
-
+    public port: number =config.port;
 
     constructor() {
         this.app = express();
@@ -18,22 +18,17 @@ export default class Server {
         const privateKey = fs.readFileSync('privkey.pem', 'utf8');
         const certificate = fs.readFileSync('cert.pem', 'utf8');
         const ca = fs.readFileSync('chain.pem', 'utf8');
-
         const credentials = {
             key: privateKey,
             cert: certificate,
             ca: ca
         };
-        // const privateKey = fs.readFileSync('play.bitcraft.es_privkey.pem');
-        // const certificate = fs.readFileSync('play.bitcraft.es_cert.pem');
-        // const ca = fs.readFileSync('chain.pem')
-        // const httpServer = http.createServer(this.app);
-        // const credentials = { key: privateKey, cert: certificate ,ca:ca};
-        const httpsServer = https.createServer(credentials, this.app);
-        // httpsServer.listen(this.port,callback());
-
-        httpsServer.listen(443, () => {
-            console.log('HTTPS Server running on port 443');
-        });
+        if(config.isHttps){
+            var webProtocol = require('https');
+        }else{
+            var webProtocol = require('http');
+        }
+        const webServer = webProtocol.createServer(credentials, this.app);
+         webServer.listen(this.port,callback());
     }
 }

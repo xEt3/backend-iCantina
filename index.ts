@@ -1,12 +1,14 @@
-import Server from './classes/server';
-import userRoutes from './routes/user.routes';
-import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
-import fileUpload from 'express-fileupload';
 import cors from 'cors';
-import productRoutes from './routes/product.routes';
-import orderRoutes from './routes/order.routes';
+import fileUpload from 'express-fileupload';
+import mongoose from 'mongoose';
+
+import Server from './classes/server';
+import { config } from './config';
 import googleRoutes from './routes/google.routes';
+import orderRoutes from './routes/order.routes';
+import productRoutes from './routes/product.routes';
+import userRoutes from './routes/user.routes';
 
 const server = new Server();
 
@@ -20,17 +22,16 @@ server.app.use(fileUpload());
 // Configurar cors
 server.app.use(cors({ origin: true, credentials: true }))
 
-//Routas de mi app 
+//Routas de mi app
 server.app.use('/user', userRoutes);
 server.app.use('/product', productRoutes);
 server.app.use('/order', orderRoutes);
 server.app.use('/google', googleRoutes);
 
 //Conectar db
-mongoose.connect('mongodb://localhost:27017/testiCantina',
+mongoose.connect(config.database_url,
     { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, (err) => {
         if (err) {
-            console.error('Error: Cant connect with data base');
             console.error('Error: Cant connect with data base');
         } else {
             console.log('DB online')
@@ -59,7 +60,7 @@ server.start(() => {
             }
             ++alias;
         });
-       
+
     });
     console.log(`Server running on ${address}:${server.port}`);
 

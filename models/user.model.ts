@@ -1,6 +1,8 @@
-
-import { Schema, model, Document } from "mongoose";
-import bcrypt from 'bcrypt';
+import {
+  Document,
+  model,
+  Schema,
+} from 'mongoose';
 
 const userSchema = new Schema({
     name: {
@@ -47,12 +49,12 @@ userSchema.pre<Iuser>('save', function (next) {
 export interface Iuser extends Document {
     name: string,
     mail: string,
-    img: string,
+    img?: string,
     uid:string,
-    admin: boolean,
-    employee: boolean,
-    imgsTemp: string[],
-    created: Date
+    admin?: boolean,
+    employee?: boolean,
+    imgsTemp?: string[],
+    created?: Date
 }
 
 export const User = model<Iuser>('User', userSchema)

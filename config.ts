@@ -1,10 +1,15 @@
 const port = 3000;
-const baseURL = `http://localhost:${port}`;
+const baseURL = `http://127.0.0.1:${port}`;
+const database_name= 'testiCantina';
+const database_ip='127.0.0.1';
+const database_port = 27017;
 export const config = {
   // The secret for the encryption of the jsonwebtoken
+  isHttps:false,
   JWTsecret: 'mysecret',
   baseURL: baseURL,
   port: port,
+  database_url:'mongodb://'+database_ip+':'+database_port+'/'+database_name,
   // The credentials and information for OAuth2
   oauth2Credentials: {
     client_id: "283447142110-4tg4vook1dcm1h54sl7a9be9tltj55n3.apps.googleusercontent.com",

@@ -52,13 +52,9 @@ export default class PushNotification {
 
         var req = https.request(options, (res: any) => {
             res.on('data', function (data: string) {
-                console.log("Response:");
-                console.log(JSON.parse(data));
             });
         });
         req.on('error', (e: any) => {
-            console.log("ERROR:");
-            console.log(e);
         });
         req.write(JSON.stringify(data));
         req.end();

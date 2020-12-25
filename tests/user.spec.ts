@@ -1,31 +1,32 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
+
+import { config } from '../config';
 import { User } from '../models/user.model';
 
 let chai = require('chai');
 let chaiHttp = require('chai-http');
 const expect = require('chai').expect;
 chai.use(chaiHttp);
-const url = 'http://localhost:3000';
+const url = config.baseURL;
 let users: any[] = []
 let token: any;
 
 describe('UserTest: ', () => {
     before((done) => {
-        mongoose.connect('mongodb://localhost:27017/testiCantina', { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
+        mongoose.connect(config.database_url, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
             mongoose.connection.db.dropDatabase(function () {
                 for (let i = 0; i < 5; i++) {
                     const user = {
                         name: 'testing' + i,
                         mail: 'testing' + i,
-                        uid:i
+                        uid: i
                     }
                     users.push(user);
                 }
                 const user = {
                     name: 'Ignacio Belmonte',
                     mail: 'belmonteperona@gmail.com',
-                    uid:'113857485189568934662',
+                    uid: '113857485189568934662',
                     img: 'https://lh3.googleusercontent.com/a-/AOh14GhO_lwilOXsSx--2I0yvXEgUE9dYZHLqTlRpMcd49Q=s96-c',
                     admin: true,
                     employee: true,
@@ -139,7 +140,7 @@ describe('UserTest: ', () => {
             it('Shold verificate user and return token', (done) => {
                 chai.request(url)
                     .post(`/user/login`)
-                    .send({uid: users[0].uid })
+                    .send({ uid: users[0].uid })
                     .end(function (err: any, res: any) {
                         expect(res).to.have.status(200);
                         expect(res.body.ok).to.equals(true);
@@ -151,15 +152,13 @@ describe('UserTest: ', () => {
             it('Shold return erro 400 uid invalid', (done) => {
                 chai.request(url)
                     .post(`/user/login`)
-                    .send({ uid: 222})
+                    .send({ uid: 222 })
                     .end(function (err: any, res: any) {
                         expect(res).to.have.status(400);
                         expect(res.body.ok).to.equals(false);
                         done();
                     });
             })
-
-
 
             it('Shold return error 400 no parameters', (done) => {
                 chai.request(url)
@@ -176,7 +175,7 @@ describe('UserTest: ', () => {
             before('Login like admin user to do the operations', (done) => {
                 chai.request(url)
                     .post(`/user/login`)
-                    .send({ uid:users[5].uid })
+                    .send({ uid: users[5].uid })
                     .end(function (err: any, res: any) {
                         token = res.body.token;
                         done();
@@ -195,7 +194,6 @@ describe('UserTest: ', () => {
                         done()
                     });
             })
-
 
             it('Should change the user0 to admin', (done) => {
                 chai.request(url)
@@ -249,7 +247,7 @@ describe('UserTest: ', () => {
             it('Should return error user 1 is not admin', (done) => {
                 chai.request(url)
                     .post(`/user/login`)
-                    .send({ uid:users[4].uid })
+                    .send({ uid: users[4].uid })
                     .end(function (err: any, res: any) {
                         let tokenUser1 = res.body.token;
                         chai.request(url)
@@ -266,7 +264,7 @@ describe('UserTest: ', () => {
     });
 
     after((done) => {
-        mongoose.connect('mongodb://localhost:27017/testiCantina', { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
+        mongoose.connect(config.database_url, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
             mongoose.connection.db.dropDatabase(function () {
                 done()
             });
