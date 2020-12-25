@@ -1,7 +1,8 @@
-import { FileUpload } from '../interfaces/file-upload';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
 import uniqid from 'uniqid';
+
+import { FileUpload } from '../interfaces/file-upload';
 
 export default class FileSystem {
 
@@ -53,7 +54,7 @@ export default class FileSystem {
 
     private deleteFile(path: string): boolean {
         if (fs.existsSync(path)) {
-            fs.rmdirSync(path, { recursive: true });
+            fs.rmSync(path, { recursive: true });
             return true;
         } else {
             return false;

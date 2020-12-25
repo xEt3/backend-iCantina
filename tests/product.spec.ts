@@ -1,15 +1,15 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
-import bodyParser from 'body-parser';
 import fs from 'fs';
-import { User } from '../models/user.model';
+import mongoose from 'mongoose';
+
+import { config } from '../config';
 import { Product } from '../models/product.model';
+import { User } from '../models/user.model';
 
 let chai = require('chai');
 let chaiHttp = require('chai-http');
 const expect = require('chai').expect;
 chai.use(chaiHttp);
-const url = 'http://localhost:3000';
+const url = config.baseURL;
 let users: any[] = []
 let products: any[] = [];
 let token = '';
@@ -18,7 +18,7 @@ let productAux: any;
 
 describe('ProductTest: ', () => {
     before((done) => {
-        mongoose.connect('mongodb://localhost:27017/testiCantina', { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
+        mongoose.connect(config.database_url, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
             mongoose.connection.db.dropDatabase(async function () {
                 const user = {
                     name: 'Ignacio Belmonte',
@@ -442,29 +442,29 @@ describe('ProductTest: ', () => {
                 });
         })
 
-        // it('should return error incorrect file name', (done) => {
-        //     chai.request(url)
-        //         .delete(`/product/image/temp/dfd`)
-        //         .set({ 'x-token': token })
-        //         .end(function (err: any, res: any) {
-        //             expect(res).to.have.status(404);
-        //             expect(res.body.ok).to.equals(false);
-        //             done();
-        //         });
-        // })
+        it('should return error incorrect file name', (done) => {
+            chai.request(url)
+                .delete(`/product/image/temp/dfd`)
+                .set({ 'x-token': token })
+                .end(function (err: any, res: any) {
+                    expect(res).to.have.status(404);
+                    expect(res.body.ok).to.equals(false);
+                    done();
+                });
+        })
     })
 
 
 
 
 
-    // after((done) => {
-    //     mongoose.connect('mongodb://localhost:27017/testiPost', { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
-    //         mongoose.connection.db.dropDatabase(function () {
-    //             done()
-    //         });
-    //     })
-    // });
+    after((done) => {
+        mongoose.connect(config.database_url, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
+            mongoose.connection.db.dropDatabase(function () {
+                done()
+            });
+        })
+    });
 });
 
 

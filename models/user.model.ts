@@ -15,14 +15,14 @@ const userSchema = new Schema({
     },
     img: {
         type: String,
-        default:null
+        default: null
     },
     admin: {
         type: Boolean,
         default: false
     },
-    uid:{
-        type:String,
+    uid: {
+        type: String,
         unique: true,
         required: [true, 'uid is required']
     },
@@ -50,7 +50,7 @@ export interface Iuser extends Document {
     name: string,
     mail: string,
     img?: string,
-    uid:string,
+    uid: string,
     admin?: boolean,
     employee?: boolean,
     imgsTemp?: string[],

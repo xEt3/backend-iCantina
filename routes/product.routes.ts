@@ -1,10 +1,14 @@
-import { Router, Request, Response, NextFunction } from "express";
-import { verificacionTokenEmployee } from '../middlewares/autenticacion';
-import { Product } from '../models/product.model';
+import {
+  NextFunction,
+  Response,
+  Router,
+} from 'express';
+
 import FileSystem from '../classes/file-system';
 import { FileUpload } from '../interfaces/file-upload';
+import { verificacionTokenEmployee } from '../middlewares/autenticacion';
+import { Product } from '../models/product.model';
 import { User } from '../models/user.model';
-
 
 const productRoutes = Router();
 const fileSystem = new FileSystem();
@@ -153,7 +157,7 @@ productRoutes.post('/upload', [verificacionTokenEmployee], async (req: any, res:
     }
     fileSystem.saveTempImage(file, req.user._id).then(async (imageName: string) => {
         const usr = await User.findById(req.user._id).exec();
-        if (!usr) {
+        if (!usr || !usr.imgsTemp) {
             return res.status(404).json({
                 ok: false,
                 message: 'No se obtubo el user'
@@ -187,7 +191,7 @@ productRoutes.delete('/image/temp/:imageName', [verificacionTokenEmployee], asyn
         })
     }
     const usr = await User.findById(req.user._id).exec();
-    if (!usr) {
+    if (!usr || !usr.imgsTemp ) {
         return res.status(404).json({
             ok: true,
             message: 'Usuario not found'

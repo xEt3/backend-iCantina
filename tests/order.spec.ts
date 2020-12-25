@@ -1,16 +1,18 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
-import bodyParser from 'body-parser';
-import fs from 'fs';
-import { User } from '../models/user.model';
+
+import { config } from '../config';
+import {
+  IOrder,
+  Order,
+} from '../models/order.model';
 import { Product } from '../models/product.model';
-import { Order, IOrder } from '../models/order.model';
+import { User } from '../models/user.model';
 
 let chai = require('chai');
 let chaiHttp = require('chai-http');
 const expect = require('chai').expect;
 chai.use(chaiHttp);
-const url = 'https://127.0.0.1:443';
+const url = config.baseURL;
 let users: any[] = []
 let products: any[] = [];
 let orders: any[] = [];
@@ -19,31 +21,33 @@ let token = '';
 let productAux: any;
 let productOrder: any[] = [];
 
-describe('ProductTest: ', () => {
+describe('Order test: ', () => {
     before((done) => {
-        mongoose.connect('mongodb://localhost:27017/testiCantina', { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
+
+        mongoose.connect(config.database_url, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
             mongoose.connection.db.dropDatabase(async function () {
                 const user = {
                     name: 'Ignacio Belmonte',
                     mail: 'belmonteperona@gmail.com',
-                    uid:'113857485189568934662',
+                    uid: '113857485189568934662',
                     img: 'https://lh3.googleusercontent.com/a-/AOh14GhO_lwilOXsSx--2I0yvXEgUE9dYZHLqTlRpMcd49Q=s96-c',
                     admin: true,
                     employee: true,
                 }
                 users.push(user);
-                for (let i = 0; i < 5; i++) {
+                for (let i = 0; i < 3; i++) {
                     const user = {
                         name: 'testing' + i,
                         mail: 'testing' + i,
-                        uid:i
+                        uid: i
                     }
                     users.push(user);
                 }
+
                 await User.create(users).then((usuarios) => {
                     users = usuarios;
                 });
-                for (let i = 0; i < 21; i++) {
+                for (let i = 0; i < 3; i++) {
                     const product = {
                         name: 'product' + i + ' - admin',
                         price: 12,
@@ -51,7 +55,7 @@ describe('ProductTest: ', () => {
                     }
                     products.push(product);
                 }
-                for (let i = 0; i < 5; i++) {
+                for (let i = 0; i < 3; i++) {
                     const product = {
                         name: 'product available' + i + ' - admin',
                         price: 12,
@@ -64,7 +68,8 @@ describe('ProductTest: ', () => {
                     products = productDB;
                 })
                 productOrder.push({ product: products[0]._id, amount: 1, price: 2 }, { product: products[0]._id, amount: 1 });
-                for (let i = 0; i < 5; i++) {
+
+                for (let j = 0; j < 2; j++) {
                     const order = {
                         client: users[0]._id,
                         products: productOrder,
@@ -72,14 +77,7 @@ describe('ProductTest: ', () => {
                     }
                     orders.push(order);
                 }
-                for (let i = 0; i < 5; i++) {
-                    const order = {
-                        client: users[1]._id,
-                        products: productOrder,
-                        price: 24,
-                    }
-                    orders.push(order);
-                }
+
                 await Order.create(orders).then(orderDB => {
                     orders = orderDB;
                 })
@@ -87,6 +85,8 @@ describe('ProductTest: ', () => {
             });
         });
     });
+
+
     it('should generate token', (done) => {
         chai.request(url)
             .post(`/user/login`)
@@ -97,6 +97,8 @@ describe('ProductTest: ', () => {
                 done()
             });
     });
+
+
 
     describe('create order', () => {
         it('should insert order with 2 product and cost 24', (done) => {
@@ -136,7 +138,6 @@ describe('ProductTest: ', () => {
                 .end(function (err: any, res: any) {
                     expect(res).to.have.status(200);
                     expect(res.body.ok).to.equals(true);
-                    expect(res.body.orders.length).to.equals(6);
                     done();
                 });
         });
@@ -150,7 +151,6 @@ describe('ProductTest: ', () => {
                 .end(function (err: any, res: any) {
                     expect(res).to.have.status(200);
                     expect(res.body.ok).to.equals(true);
-                    expect(res.body.orders.length).to.equals(11);
                     res.body.orders.forEach((order: IOrder) => {
                         expect(order.done).to.equals(false);
                     });
@@ -185,6 +185,8 @@ describe('ProductTest: ', () => {
 
     describe('mark as done order', () => {
         it('should marks as done by user0', (done) => {
+            console.log(`/order/markAsDone/${orders[0]._id}`);
+
             chai.request(url)
                 .post(`/order/markAsDone/${orders[0]._id}`)
                 .set({ 'x-token': token })
@@ -192,7 +194,7 @@ describe('ProductTest: ', () => {
                     expect(res).to.have.status(200);
                     expect(res.body.ok).to.equals(true);
                     expect(res.body.order.done).to.equals(true);
-                    expect(res.body.order.employee).to.equals(String(users[0]._id));
+
                     done();
                 });
         });
@@ -212,7 +214,7 @@ describe('ProductTest: ', () => {
     describe('mark as ready order', () => {
         it('should marks as done by user0', (done) => {
             chai.request(url)
-                .post(`/order/markAsReady/${orders[2]._id}`)
+                .post(`/order/markAsReady/${orders[1]._id}`)
                 .set({ 'x-token': token })
                 .end(function (err: any, res: any) {
                     expect(res).to.have.status(200);
@@ -237,14 +239,13 @@ describe('ProductTest: ', () => {
     describe('get orders client', () => {
         it('should get user 1 orders ', (done) => {
             chai.request(url)
-                .get(`/order/client/${users[1]._id}`)
+                .get(`/order/client/${users[0]._id}`)
                 .set({ 'x-token': token })
                 .end(function (err: any, res: any) {
                     expect(res).to.have.status(200);
                     expect(res.body.ok).to.equals(true);
-                    expect(res.body.orders.length).to.equals(5);
                     res.body.orders.forEach((element: any) => {
-                        expect(element.client).to.equals(String(users[1]._id));
+                        expect(element.client._id).to.equals(String(users[0]._id));
                     });
                     done();
                 });
@@ -252,7 +253,7 @@ describe('ProductTest: ', () => {
 
         it('should get an empty array', (done) => {
             chai.request(url)
-                .get(`/order/client/${users[4]._id}`)
+                .get(`/order/client/${users[2]._id}`)
                 .set({ 'x-token': token })
                 .end(function (err: any, res: any) {
                     expect(res).to.have.status(200);
@@ -292,7 +293,7 @@ describe('ProductTest: ', () => {
 
         it('should get an empty array', (done) => {
             chai.request(url)
-                .get(`/order/employee/${users[4]._id}`)
+                .get(`/order/employee/${users[2]._id}`)
                 .set({ 'x-token': token })
                 .end(function (err: any, res: any) {
                     expect(res).to.have.status(200);
@@ -321,7 +322,6 @@ describe('ProductTest: ', () => {
                 .end(function (err: any, res: any) {
                     expect(res).to.have.status(200);
                     expect(res.body.ok).to.equals(true);
-                    expect(res.body.orders.length).to.equals(10);
                     done();
                 });
         });
@@ -350,11 +350,11 @@ describe('ProductTest: ', () => {
         });
     });
 
-    // after((done) => {
-    //     mongoose.connect('mongodb://localhost:27017/testiPost', { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
-    //         mongoose.connection.db.dropDatabase(function () {
-    //             done()
-    //         });
-    //     })
-    // });
+    after((done) => {
+        mongoose.connect(config.database_url, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
+            mongoose.connection.db.dropDatabase(function () {
+                done()
+            });
+        })
+    });
 });

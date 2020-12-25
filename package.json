@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha dist/tests"
+    "test": "mocha dist/tests",
+    "start": "nodemon dist"
   },
   "repository": {
     "type": "git",
