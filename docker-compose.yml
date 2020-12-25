@@ -9,6 +9,8 @@ services:
             - "5100:443"
         links:
             - mongo
+        volumes:
+            - - /opt/iCantina/product_img/uploads:/usr/src/app/dist/uploads
 
     mongo:
         container_name: databaseicantina
