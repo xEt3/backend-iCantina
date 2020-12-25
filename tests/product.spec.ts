@@ -454,17 +454,6 @@ describe('ProductTest: ', () => {
         })
     })
 
-
-
-
-
-    after((done) => {
-        mongoose.connect(config.database_url, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
-            mongoose.connection.db.dropDatabase(function () {
-                done()
-            });
-        })
-    });
 });
 
 
