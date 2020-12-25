@@ -10,7 +10,7 @@ services:
         links:
             - mongo
         volumes:
-            - - /opt/iCantina/product_img/uploads:/usr/src/app/dist/uploads
+            -  /opt/iCantina/product_img/uploads:/usr/src/app/dist/uploads
 
     mongo:
         container_name: databaseicantina
