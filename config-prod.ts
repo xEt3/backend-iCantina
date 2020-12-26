@@ -1,15 +1,15 @@
-const port = 3000;
+const port = 443;
 const baseURL = `https://127.0.0.1:${port}`;
-const database_name= 'testiCantina';
-const database_ip='mongo'; // change to 127.0.0.1 to run the test out of docker
+const database_name = 'iCantina';
+const database_ip = 'mongo'; // change to 127.0.0.1 to run the test out of docker
 const database_port = 27017;
 export const config = {
   // The secret for the encryption of the jsonwebtoken
-  isHttps:false,
+  isHttps: true,
   JWTsecret: 'mysecret',
   baseURL: baseURL,
   port: port,
-  database_url:'mongodb://'+database_ip+':'+database_port+'/'+database_name,
+  database_url: 'mongodb://' + database_ip + ':' + database_port + '/' + database_name,
   // The credentials and information for OAuth2
   oauth2Credentials: {
     client_id: "283447142110-4tg4vook1dcm1h54sl7a9be9tltj55n3.apps.googleusercontent.com",

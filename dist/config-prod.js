@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.config = void 0;
-const port = 3000;
+const port = 443;
 const baseURL = `https://127.0.0.1:${port}`;
-const database_name = 'testiCantina';
+const database_name = 'iCantina';
 const database_ip = 'mongo'; // change to 127.0.0.1 to run the test out of docker
 const database_port = 27017;
 exports.config = {
     // The secret for the encryption of the jsonwebtoken
-    isHttps: false,
+    isHttps: true,
     JWTsecret: 'mysecret',
     baseURL: baseURL,
     port: port,

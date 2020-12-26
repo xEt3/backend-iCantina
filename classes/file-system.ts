@@ -6,7 +6,7 @@ import { FileUpload } from '../interfaces/file-upload';
 
 export default class FileSystem {
 
-    constructor() { }
+    constructor() {}
 
     moverImgsFormTempToProduct(userID: string) {
         const pathTmp = path.resolve(__dirname, '../uploads', userID, 'temp');

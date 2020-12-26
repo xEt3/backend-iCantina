@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+    web-dev:
+        container_name: icantina-dev
+        restart: always
+        build:
+            context: .
+            dockerfile: Dockerfile-dev
+        ports:
+            - "3000:3000"
+        links:
+            - mongo
+        volumes:
+            -  ./dist:/usr/src/app/dist
+
+    mongo:
+        container_name: databaseicantina-dev
+        image: mongo
+        ports:
+            - "27017:27017"
+        environment:
+            MONGO_INITDB_DATABASE: testiCantina
+        logging:
+            driver: none
+
