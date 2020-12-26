@@ -13,7 +13,7 @@ let token: any;
 
 describe('UserTest: ', () => {
     before((done) => {
-        mongoose.connect(config.database_url, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
+        mongoose.connect(config.database_url_local, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
             mongoose.connection.db.dropDatabase(function () {
                 for (let i = 0; i < 5; i++) {
                     const user = {

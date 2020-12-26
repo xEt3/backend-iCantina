@@ -24,7 +24,7 @@ let productOrder: any[] = [];
 describe('Order test: ', () => {
     before((done) => {
 
-        mongoose.connect(config.database_url, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
+        mongoose.connect(config.database_url_local, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
             mongoose.connection.db.dropDatabase(async function () {
                 const user = {
                     name: 'Ignacio Belmonte',

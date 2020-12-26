@@ -28,7 +28,7 @@ let token = '';
 let productAux;
 describe('ProductTest: ', () => {
     before((done) => {
-        mongoose_1.default.connect(config_1.config.database_url, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
+        mongoose_1.default.connect(config_1.config.database_url_local, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
             mongoose_1.default.connection.db.dropDatabase(function () {
                 return __awaiter(this, void 0, void 0, function* () {
                     const user = {

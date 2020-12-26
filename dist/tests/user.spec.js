@@ -15,7 +15,7 @@ let users = [];
 let token;
 describe('UserTest: ', () => {
     before((done) => {
-        mongoose_1.default.connect(config_1.config.database_url, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
+        mongoose_1.default.connect(config_1.config.database_url_local, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, function () {
             mongoose_1.default.connection.db.dropDatabase(function () {
                 for (let i = 0; i < 5; i++) {
                     const user = {

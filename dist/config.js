@@ -2,9 +2,18 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.config = void 0;
 const port = 3000;
-const baseURL = `https://127.0.0.1:${port}`;
+const isHttps = false;
+const ip = '127.0.0.1';
+let baseURL;
+if (isHttps) {
+    baseURL = `https://${ip}:${port}`;
+}
+else {
+    baseURL = `http://${ip}:${port}`;
+}
 const database_name = 'testiCantina';
 const database_ip = 'mongo'; // change to 127.0.0.1 to run the test out of docker
+const database_ip_docker = 'mongo'; // change to 127.0.0.1 to run the test out of docker
 const database_port = 27017;
 exports.config = {
     // The secret for the encryption of the jsonwebtoken
@@ -12,7 +21,8 @@ exports.config = {
     JWTsecret: 'mysecret',
     baseURL: baseURL,
     port: port,
-    database_url: 'mongodb://' + database_ip + ':' + database_port + '/' + database_name,
+    database_url: 'mongodb://' + database_ip_docker + ':' + database_port + '/' + database_name,
+    database_url_local: 'mongodb://' + database_ip + ':' + database_port + '/' + database_name,
     // The credentials and information for OAuth2
     oauth2Credentials: {
         client_id: "283447142110-4tg4vook1dcm1h54sl7a9be9tltj55n3.apps.googleusercontent.com",
