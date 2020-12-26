@@ -1,4 +1,4 @@
-const port = 443;
+const port = 5100;
 const baseURL = `https://127.0.0.1:${port}`;
 const database_name = 'iCantina';
 const database_ip = 'mongo'; // change to 127.0.0.1 to run the test out of docker
