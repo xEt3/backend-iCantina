@@ -12,7 +12,7 @@ else {
     baseURL = `http://${ip}:${port}`;
 }
 const database_name = 'testiCantina';
-const database_ip = 'mongo'; // change to 127.0.0.1 to run the test out of docker
+const database_ip = '127.0.0.1'; // change to 127.0.0.1 to run the test out of docker
 const database_ip_docker = 'mongo'; // change to 127.0.0.1 to run the test out of docker
 const database_port = 27017;
 exports.config = {
