@@ -8,8 +8,8 @@ if(isHttps){
     baseURL = `http://${ip}:${port}`;
 }
 const database_name= 'testiCantina';
-const database_ip='127.0.0.1'; // change to 127.0.0.1 to run the test out of docker
-const database_ip_docker='mongo'; // change to 127.0.0.1 to run the test out of docker
+const database_ip_docker='mongo';
+const database_ip='127.0.0.1'; // change  127.0.0.1 to database_ip_docker to run test into docker shell
 const database_port = 27017;
 export const config = {
   // The secret for the encryption of the jsonwebtoken
