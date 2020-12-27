@@ -26,6 +26,6 @@ jobs:
         with:
           command: cd /home/nacho/backend-icantina | git pull | docker docker-compose -f docker-compose.dev.yml up --build
           host: ${{ secrets.HOST }}
-          username: garygrossgarten
+          username: nacho
           passphrase: ${{ secrets.PASSPHRASE }}
           privateKey: ${{ secrets.PRIVATE_KEY}}
