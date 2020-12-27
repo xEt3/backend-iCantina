@@ -11,6 +11,8 @@ services:
             - mongo
         volumes:
             -  /opt/iCantina/product_img/uploads:/usr/src/app/dist/uploads
+        networks:
+            - con_nginxproxymanager
 
     mongo:
         container_name: databaseicantina
@@ -23,4 +25,10 @@ services:
             driver: none
         volumes:
             - /opt/iCantina/mongo:/data/db
+        networks:
+            - con_nginxproxymanager
 
+networks:
+    con_nginxproxymanager:
+        external:
+            name: nginxproxymanager_default
