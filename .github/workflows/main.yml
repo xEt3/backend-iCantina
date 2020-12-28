@@ -21,5 +21,5 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - run: whoami
+      - run: id
       - run: cd /home/nacho/backend-iCantina && git pull && docker-compose up --build
