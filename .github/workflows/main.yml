@@ -17,15 +17,8 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: ls -a via ssh
-        uses: garygrossgarten/github-action-ssh@release
-        with:
-          command: cd /home/nacho/backend-icantina | git pull | docker docker-compose -f docker-compose.dev.yml up --build
-          host: ${{ secrets.HOST }}
-          username: nacho
-          passphrase: ${{ secrets.PASSPHRASE }}
-          privateKey: ${{ secrets.PRIVATE_KEY}}
+      - run: sudo docker-compose up --build
